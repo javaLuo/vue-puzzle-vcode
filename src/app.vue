@@ -1,0 +1,481 @@
+<template>
+  <div :class="['vue-puzzle-vcode', {'show': show}]"
+       @mousedown="onCloseMouseDown"
+       @mouseup="onCloseMouseUp">
+    <div class="vue-auth-box"
+         @mousedown.stop>
+      <div class="auth-body">
+        <canvas ref="canvas1"
+                :width="canvasWidth"
+                :height="canvasHeight"
+                :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
+        <canvas width="70"
+                class="auth-canvas2"
+                :height="canvasHeight"
+                ref="canvas2"
+                :style="`width:70px;height:${canvasHeight}px;transform:translateX(${styleWidth - 20*((styleWidth - 50)/(canvasWidth - 50)) - 50}px)`" />
+        <div :class="['loading-box',{'hide': !loading}]"></div>
+        <div :class="['info-box',{'show':infoBoxShow},{'fail':infoBoxFail}]">{{infoText}}</div>
+      </div>
+      <div class="auth-control">
+        <div class="range-box">
+          <div class="range-text">拖动滑块完成拼图</div>
+          <div class="range-slider"
+               ref="range-slider"
+               :style="`width:${styleWidth}px`">
+            <div :class="['range-btn', {'isDown': mouseDown}]"
+                 @mousedown="onRangeMouseDown($event)">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  /** 私有数据 **/
+  data() {
+    return {
+      canvasWidth: 310, // 主canvas的宽
+      canvasHeight: 160, // 主canvas的高
+      mouseDown: false, // 鼠标是否在按钮上按下
+      startWidth: 50, // 鼠标点下去时父级的width
+      startX: 0, // 鼠标按下时的X
+      newX: 0, // 鼠标当前的偏移X
+      pinX: 0, // 拼图的起始X
+      pinY: 0, // 拼图的起始Y
+      loading: true, // 是否正在加在中，主要是等图片onload
+      isCanSlide: false, // 是否可以拉动滑动条
+      error: false, // 图片加在失败会出现这个，提示用户手动刷新
+      infoBoxShow: false, // 提示信息是否出现
+      infoText: "", // 提示等信息
+      infoBoxFail: false, // 是否验证失败
+      timer1: null, // setTimout1
+      closeDown: false // 为了解决Mac上的click BUG
+    };
+  },
+
+  /** 父级参数 **/
+  props: {
+    // 是否出现，由父级控制
+    show: { type: Boolean, default: false },
+    // 所有的背景图片
+    imgs: {
+      type: Array,
+      required: true,
+      defalut: () => {
+        return [];
+      }
+    },
+    successText: {
+      type: String,
+      default: "验证通过！"
+    },
+    failText: {
+      type: String,
+      default: "验证失败，请重试"
+    }
+  },
+
+  /** 生命周期 **/
+  mounted() {
+    document.addEventListener("mousemove", this.onRangeMouseMove, false);
+    document.addEventListener("mouseup", this.onRangeMouseUp, false);
+  },
+  beforeDestroy() {
+    clearTimeout(this.timer1);
+    document.removeEventListener("mousemove", this.onRangeMouseMove, false);
+    document.removeEventListener("mouseup", this.onRangeMouseUp, false);
+  },
+
+  /** 监听 **/
+  watch: {
+    show(newV) {
+      // 每次出现都应该重新初始化
+      console.log("watch", newV);
+      if (newV) {
+        this.reset();
+      }
+    }
+  },
+  /** 计算属性 **/
+  computed: {
+    styleWidth() {
+      const w = this.startWidth + this.newX - this.startX;
+      return w < 50 ? 50 : w > 310 ? 310 : w;
+    }
+  },
+
+  /** 方法 **/
+  methods: {
+    // 关闭
+    onClose() {
+      if (!this.mouseDown) {
+        clearTimeout(this.timer1);
+        this.$emit("onClose");
+      }
+    },
+    onCloseMouseDown() {
+      this.closeDown = true;
+    },
+    onCloseMouseUp() {
+      if (this.closeDown) {
+        this.onClose();
+      }
+      this.closeDown = false;
+    },
+    // 鼠标按下准备拖动
+    onRangeMouseDown(e) {
+      if (this.isCanSlide) {
+        this.mouseDown = true;
+        this.startWidth = this.$refs["range-slider"].clientWidth;
+        this.newX = e.clientX;
+        this.startX = e.clientX;
+      }
+    },
+    // 鼠标移动
+    onRangeMouseMove(e) {
+      if (this.mouseDown) {
+        this.newX = e.clientX;
+      }
+    },
+    // 鼠标抬起
+    onRangeMouseUp(e) {
+      if (this.mouseDown) {
+        this.mouseDown = false;
+        this.submit();
+      }
+    },
+    // 开始进行
+    init() {
+      this.loading = true;
+
+      const c = this.$refs.canvas1;
+      const c2 = this.$refs.canvas2;
+      const ctx = c.getContext("2d");
+      const ctx2 = c2.getContext("2d");
+      const img = new Image();
+
+      ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      ctx2.clearRect(0, 0, 70, this.canvasHeight);
+
+      // 取一个随机坐标，作为拼图块的位置
+      this.pinX = this.getRandom(60, this.canvasWidth - 90); // 留20的边距
+      this.pinY = this.getRandom(20, this.canvasHeight - 90);
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        // 先画小图
+        ctx.save();
+        this.paintBrick(ctx);
+        // 小图外阴影
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowColor = "#000";
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.clip();
+
+        ctx.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
+
+        // 设置小图的内阴影
+        ctx.globalCompositeOperation = "source-atop";
+        this.paintBrick(ctx);
+        ctx.arc(this.pinX + 35, this.pinY + 35, 80, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.shadowColor = "rgba(255, 255, 255, .8)";
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = "#ffffaa";
+        ctx.fill();
+
+        // 将小图赋值给ctx2
+        const imgData = ctx.getImageData(
+          this.pinX - 3,
+          this.pinY - 20,
+          this.pinX + 75,
+          this.pinY + 50
+        );
+        ctx2.putImageData(imgData, 0, this.pinY - 20);
+        ctx.restore();
+
+        // 清理
+        ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+        // 画缺口
+        ctx.save();
+        this.paintBrick(ctx);
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.restore();
+
+        // 画缺口的内阴影
+        ctx.save();
+        ctx.globalCompositeOperation = "source-atop";
+        this.paintBrick(ctx);
+        ctx.arc(this.pinX + 35, this.pinY + 35, 80, 0, Math.PI * 2, true);
+        ctx.shadowColor = "#000";
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.shadowBlur = 16;
+        ctx.fill();
+        ctx.restore();
+
+        // 画整体背景图
+        ctx.save();
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
+        ctx.restore();
+
+        this.loading = false;
+      };
+      img.onerror = () => {
+        console.log("onError了");
+        this.loading = true;
+        this.isCanSlide = false;
+        this.error = true;
+      };
+      img.src = this.imgs[this.getRandom(0, this.imgs.length - 1)];
+    },
+    // 工具 - 范围随机数
+    getRandom(min, max) {
+      return Math.round(Math.random() * (max - min) + min);
+    },
+    // 绘制拼图块的路径
+    paintBrick(ctx) {
+      ctx.beginPath();
+      ctx.moveTo(this.pinX, this.pinY);
+      ctx.lineTo(this.pinX + 15, this.pinY);
+      ctx.bezierCurveTo(
+        this.pinX + 15,
+        this.pinY - 20,
+        this.pinX + 15 + 20,
+        this.pinY - 20,
+        this.pinX + 15 + 20,
+        this.pinY
+      );
+      ctx.lineTo(this.pinX + 15 + 20 + 15, this.pinY);
+      ctx.lineTo(this.pinX + 15 + 20 + 15, this.pinY + 15);
+      ctx.bezierCurveTo(
+        this.pinX + 15 + 20 + 15 + 20,
+        this.pinY + 15,
+        this.pinX + 15 + 20 + 15 + 20,
+        this.pinY + 15 + 20,
+        this.pinX + 15 + 20 + 15,
+        this.pinY + 15 + 20
+      );
+      ctx.lineTo(this.pinX + 15 + 20 + 15, this.pinY + 15 + 20 + 15);
+      ctx.lineTo(this.pinX, this.pinY + 15 + 20 + 15);
+      ctx.lineTo(this.pinX, this.pinY + 15 + 20);
+
+      ctx.bezierCurveTo(
+        this.pinX + 20,
+        this.pinY + 15 + 20,
+        this.pinX + 20,
+        this.pinY + 15,
+        this.pinX,
+        this.pinY + 15
+      );
+      ctx.lineTo(this.pinX, this.pinY);
+    },
+    // 开始判定
+    submit() {
+      console.log(
+        "success,",
+        this.pinX,
+        this.styleWidth,
+        this.pinX - this.styleWidth + 50
+      );
+      if (Math.abs(this.pinX - this.styleWidth + 50) < 10) {
+        // 成功
+        this.infoText = this.successText;
+        this.infoBoxFail = false;
+        this.infoBoxShow = true;
+        this.isCanSlide = false;
+        // 成功后准备关闭
+        clearTimeout(this.timer1);
+        this.timer1 = setTimeout(() => {
+          // 成功的回调
+          this.$emit("successCallback");
+        }, 800);
+      } else {
+        // 失败
+        this.infoText = this.failText;
+        this.infoBoxFail = true;
+        this.infoBoxShow = true;
+        this.isCanSlide = false;
+        // 失败的回调
+        this.$emit("failCallback");
+        // 1秒后重置
+        clearTimeout(this.timer1);
+        this.timer1 = setTimeout(() => {
+          this.reset();
+        }, 800);
+      }
+    },
+    // 重置
+    reset() {
+      this.infoBoxFail = false;
+      this.infoBoxShow = false;
+      this.isCanSlide = true;
+      this.startWidth = 50; // 鼠标点下去时父级的width
+      this.startX = 0; // 鼠标按下时的X
+      this.newX = 0; // 鼠标当前的偏移X
+      this.init();
+    }
+  }
+};
+</script>
+<style lang="less">
+.vue-puzzle-vcode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms;
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+.vue-auth-box {
+  padding: 20px;
+  background: #fff;
+  user-select: none;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  .auth-body {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 3px;
+    .loading-box {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 2;
+      opacity: 1;
+      transition: opacity 200ms;
+      &.hide {
+        opacity: 0;
+      }
+    }
+    .info-box {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      overflow: hidden;
+      font-size: 13px;
+      background-color: #83ce3f;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all 200ms;
+      color: #fff;
+      &.show {
+        opacity: 0.95;
+        transform: translateY(0);
+      }
+      &.fail {
+        background-color: #ce3f83;
+      }
+    }
+    .auth-canvas2 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 70px;
+      height: 100%;
+      z-index: 2;
+    }
+  }
+  .auth-control {
+    .range-box {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      background-color: #eef1f8;
+      margin-top: 20px;
+      border-radius: 3px;
+      box-shadow: 0 0 8px rgba(240, 240, 240, 0.6) inset;
+      .range-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+        color: #b7bcd1;
+      }
+      .range-slider {
+        position: absolute;
+        height: 100%;
+        width: 50px;
+        background-color: rgba(106, 160, 255, 0.8);
+        border-radius: 3px;
+        .range-btn {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          right: 0;
+          width: 50px;
+          height: 50px;
+          background-color: #fff;
+          border-radius: 3px;
+          box-shadow: 0 0 4px #ccc;
+          cursor: pointer;
+          & > div {
+            width: 0;
+            height: 40%;
+
+            transition: all 200ms;
+            &:nth-child(2) {
+              margin: 0 4px;
+            }
+            border: solid 1px #6aa0ff;
+          }
+          &:hover,
+          &.isDown {
+            & > div:first-child {
+              border: solid 4px transparent;
+              height: 0;
+              border-right-color: #6aa0ff;
+            }
+            & > div:nth-child(2) {
+              border-width: 3px;
+              height: 0;
+              border-radius: 3px;
+              margin: 0 6px;
+              border-right-color: #6aa0ff;
+            }
+            & > div:nth-child(3) {
+              border: solid 4px transparent;
+              height: 0;
+              border-left-color: #6aa0ff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>
