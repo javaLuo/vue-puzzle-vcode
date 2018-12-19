@@ -1,4 +1,5 @@
 <template>
+  <!-- 本体部分 -->
   <div :class="['vue-puzzle-vcode', {'show': show}]"
        @mousedown="onCloseMouseDown"
        @mouseup="onCloseMouseUp">
@@ -9,13 +10,20 @@
                 :width="canvasWidth"
                 :height="canvasHeight"
                 :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
+        <canvas ref="canvas3"
+                :class="['auth-canvas3',{'show': isSuccess}]"
+                :width="canvasWidth"
+                :height="canvasHeight"
+                :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
         <canvas width="70"
                 class="auth-canvas2"
                 :height="canvasHeight"
                 ref="canvas2"
-                :style="`width:70px;height:${canvasHeight}px;transform:translateX(${styleWidth - 20*((styleWidth - 50)/(canvasWidth - 50)) - 50}px)`" />
+                :style="`width:70px;height:${canvasHeight}px;transform:translateX(${styleWidth - 50 - 20*((styleWidth - 50)/(canvasWidth-50))}px)`" />
         <div :class="['loading-box',{'hide': !loading}]"></div>
         <div :class="['info-box',{'show':infoBoxShow},{'fail':infoBoxFail}]">{{infoText}}</div>
+        <div :class="['flash',{'show': isSuccess}]"
+             :style="`transform: translateX(${isSuccess ? `${canvasWidth + 100}px` : '-50px'}) skew(-30deg, 0);`"></div>
       </div>
       <div class="auth-control">
         <div class="range-box">
@@ -34,6 +42,7 @@
       </div>
     </div>
   </div>
+
 </template>
 <script>
 export default {
@@ -55,7 +64,8 @@ export default {
       infoText: "", // 提示等信息
       infoBoxFail: false, // 是否验证失败
       timer1: null, // setTimout1
-      closeDown: false // 为了解决Mac上的click BUG
+      closeDown: false, // 为了解决Mac上的click BUG
+      isSuccess: false // 验证成功
     };
   },
 
@@ -156,16 +166,19 @@ export default {
 
       const c = this.$refs.canvas1;
       const c2 = this.$refs.canvas2;
+      const c3 = this.$refs.canvas3;
       const ctx = c.getContext("2d");
       const ctx2 = c2.getContext("2d");
+      const ctx3 = c3.getContext("2d");
       const img = new Image();
 
       ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       ctx2.clearRect(0, 0, 70, this.canvasHeight);
 
       // 取一个随机坐标，作为拼图块的位置
-      this.pinX = this.getRandom(60, this.canvasWidth - 90); // 留20的边距
+      this.pinX = this.getRandom(90, this.canvasWidth - 90); // 留20的边距
       this.pinY = this.getRandom(20, this.canvasHeight - 90);
+      console.log("pin:", this.pinX, this.pinY);
       img.crossOrigin = "Anonymous";
       img.onload = () => {
         // 先画小图
@@ -175,12 +188,12 @@ export default {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         ctx.shadowColor = "#000";
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 3;
         ctx.fill();
         ctx.clip();
 
         ctx.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
-
+        ctx3.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
         // 设置小图的内阴影
         ctx.globalCompositeOperation = "source-atop";
         this.paintBrick(ctx);
@@ -195,7 +208,7 @@ export default {
 
         // 将小图赋值给ctx2
         const imgData = ctx.getImageData(
-          this.pinX - 3,
+          this.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
           this.pinY - 20,
           this.pinX + 75,
           this.pinY + 50
@@ -286,17 +299,30 @@ export default {
     // 开始判定
     submit() {
       console.log(
-        "success,",
+        "验证,",
         this.pinX,
         this.styleWidth,
-        this.pinX - this.styleWidth + 50
+        this.canvasWidth,
+        20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)),
+        this.pinX -
+          (this.styleWidth - 50) +
+          20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)) -
+          3
       );
-      if (Math.abs(this.pinX - this.styleWidth + 50) < 10) {
+      if (
+        Math.abs(
+          this.pinX -
+            (this.styleWidth - 50) +
+            20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)) -
+            3
+        ) < 10
+      ) {
         // 成功
         this.infoText = this.successText;
         this.infoBoxFail = false;
         this.infoBoxShow = true;
         this.isCanSlide = false;
+        this.isSuccess = true;
         // 成功后准备关闭
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
@@ -323,6 +349,7 @@ export default {
       this.infoBoxFail = false;
       this.infoBoxShow = false;
       this.isCanSlide = true;
+      this.isSuccess = false;
       this.startWidth = 50; // 鼠标点下去时父级的width
       this.startX = 0; // 鼠标按下时的X
       this.newX = 0; // 鼠标当前的偏移X
@@ -331,7 +358,7 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="scss">
 .vue-puzzle-vcode {
   position: fixed;
   top: 0;
@@ -339,9 +366,6 @@ export default {
   bottom: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 999;
   opacity: 0;
   pointer-events: none;
@@ -352,6 +376,10 @@ export default {
   }
 }
 .vue-auth-box {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   padding: 20px;
   background: #fff;
   user-select: none;
@@ -391,6 +419,7 @@ export default {
       transform: translateY(24px);
       transition: all 200ms;
       color: #fff;
+      z-index: 10;
       &.show {
         opacity: 0.95;
         transform: translateY(0);
@@ -406,6 +435,29 @@ export default {
       width: 70px;
       height: 100%;
       z-index: 2;
+    }
+    .auth-canvas3 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 600ms;
+      z-index: 3;
+      &.show {
+        opacity: 1;
+      }
+    }
+    .flash {
+      position: absolute;
+      top: 0;
+      left: -50px;
+      width: 30px;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.1);
+      z-index: 3;
+      &.show {
+        transition: transform 600ms;
+      }
     }
   }
   .auth-control {
