@@ -7,14 +7,14 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
   mode: 'production',
-  entry: [
-    './src/index.js', // 项目入口
-  ],
+  entry: './src/index.js', // 项目入口
   output: {
-    path: path.resolve(__dirname, 'dist'), // 将打包好的文件放在此路径下，dev模式中，只会在内存中存在，不会真正的打包到此路径
+    path: path.resolve(__dirname, './dist'), // 将打包好的文件放在此路径下，dev模式中，只会在内存中存在，不会真正的打包到此路径
     filename: '[name].js', //编译后的文件名字
-    library: ['vue-puzzle-vcode'],
+    publicPath: '/dist/',
+    library: 'vue-puzzle-vcode',
     libraryTarget: 'umd',
+    umdNamedDefine: true,
   },
   externals: {
     vue: 'vue',
@@ -52,7 +52,7 @@ module.exports = {
       },
       {
         // 图片解析
-        test: /\.(png|jpg|gif)(\?|$)/,
+        test: /\.(png|jpg|gif|svg)(\?|$)/,
         include: path.resolve(__dirname, 'src'),
         use: ['url-loader?limit=8192&name=assets/[name].[ext]'],
       },

@@ -1,6 +1,6 @@
 {
   "name": "vue-puzzle-vcode",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "vue 滑动拼图验证码",
   "main": "dist/main.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "webpack --config webpack.production.config.js --progress --profile --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "private": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/javaLuo/vue-puzzle-vcode.git"

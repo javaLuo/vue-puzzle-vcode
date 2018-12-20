@@ -5,7 +5,8 @@
        @mouseup="onCloseMouseUp">
     <div class="vue-auth-box"
          @mousedown.stop>
-      <div class="auth-body">
+      <div class="auth-body"
+           :style="`height: ${canvasHeight}px`">
         <canvas ref="canvas1"
                 :width="canvasWidth"
                 :height="canvasHeight"
@@ -20,14 +21,19 @@
                 :height="canvasHeight"
                 ref="canvas2"
                 :style="`width:70px;height:${canvasHeight}px;transform:translateX(${styleWidth - 50 - 20*((styleWidth - 50)/(canvasWidth-50))}px)`" />
-        <div :class="['loading-box',{'hide': !loading}]"></div>
+        <div :class="['loading-box',{'hide': !loading}]">
+          <img :src="loadingSvg">
+        </div>
         <div :class="['info-box',{'show':infoBoxShow},{'fail':infoBoxFail}]">{{infoText}}</div>
         <div :class="['flash',{'show': isSuccess}]"
              :style="`transform: translateX(${isSuccess ? `${canvasWidth + 100}px` : '-50px'}) skew(-30deg, 0);`"></div>
+        <img class="reset"
+             @click="reset"
+             :src="resetSvg">
       </div>
       <div class="auth-control">
         <div class="range-box">
-          <div class="range-text">拖动滑块完成拼图</div>
+          <div class="range-text">{{sliderText}}</div>
           <div class="range-slider"
                ref="range-slider"
                :style="`width:${styleWidth}px`">
@@ -45,12 +51,12 @@
 
 </template>
 <script>
+import resetSvg from "./assets/reset.png";
+import loadingSvg from "./assets/loading.js";
 export default {
   /** 私有数据 **/
   data() {
     return {
-      canvasWidth: 310, // 主canvas的宽
-      canvasHeight: 160, // 主canvas的高
       mouseDown: false, // 鼠标是否在按钮上按下
       startWidth: 50, // 鼠标点下去时父级的width
       startX: 0, // 鼠标按下时的X
@@ -65,18 +71,20 @@ export default {
       infoBoxFail: false, // 是否验证失败
       timer1: null, // setTimout1
       closeDown: false, // 为了解决Mac上的click BUG
-      isSuccess: false // 验证成功
+      isSuccess: false, // 验证成功
+      resetSvg,
+      loadingSvg
     };
   },
-
   /** 父级参数 **/
   props: {
+    canvasWidth: { type: Number, default: 310 }, // 主canvas的宽
+    canvasHeight: { type: Number, default: 160 }, // 主canvas的高
     // 是否出现，由父级控制
     show: { type: Boolean, default: false },
     // 所有的背景图片
     imgs: {
       type: Array,
-      required: true,
       defalut: () => {
         return [];
       }
@@ -88,6 +96,10 @@ export default {
     failText: {
       type: String,
       default: "验证失败，请重试"
+    },
+    sliderText: {
+      type: String,
+      default: "拖动滑块完成拼图"
     }
   },
 
@@ -106,17 +118,17 @@ export default {
   watch: {
     show(newV) {
       // 每次出现都应该重新初始化
-      console.log("watch", newV);
       if (newV) {
         this.reset();
       }
     }
   },
+
   /** 计算属性 **/
   computed: {
     styleWidth() {
       const w = this.startWidth + this.newX - this.startX;
-      return w < 50 ? 50 : w > 310 ? 310 : w;
+      return w < 50 ? 50 : w > this.canvasWidth ? this.canvasWidth : w;
     }
   },
 
@@ -160,8 +172,11 @@ export default {
         this.submit();
       }
     },
-    // 开始进行
-    init() {
+    /**
+     * 开始进行
+     * @param withCanvas 是否强制使用canvas随机作图
+     */
+    init(withCanvas) {
       this.loading = true;
 
       const c = this.$refs.canvas1;
@@ -178,7 +193,6 @@ export default {
       // 取一个随机坐标，作为拼图块的位置
       this.pinX = this.getRandom(90, this.canvasWidth - 90); // 留20的边距
       this.pinY = this.getRandom(20, this.canvasHeight - 90);
-      console.log("pin:", this.pinX, this.pinY);
       img.crossOrigin = "Anonymous";
       img.onload = () => {
         // 先画小图
@@ -248,12 +262,13 @@ export default {
         this.loading = false;
       };
       img.onerror = () => {
-        console.log("onError了");
-        this.loading = true;
-        this.isCanSlide = false;
-        this.error = true;
+        this.init(true); // 如果图片加载错误就重新来，并强制用canvass随机作图
       };
-      img.src = this.imgs[this.getRandom(0, this.imgs.length - 1)];
+      if (!withCanvas && this.imgs && this.imgs.length) {
+        img.src = this.imgs[this.getRandom(0, this.imgs.length - 1)];
+      } else {
+        img.src = this.makeImgWithCanvas();
+      }
     },
     // 工具 - 范围随机数
     getRandom(min, max) {
@@ -296,27 +311,65 @@ export default {
       );
       ctx.lineTo(this.pinX, this.pinY);
     },
+    // 用canvas随机生成图片
+    makeImgWithCanvas() {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = this.canvasWidth;
+      canvas.height = this.canvasHeight;
+      ctx.fillStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(
+        100,
+        255
+      )},${this.getRandom(100, 255)})`;
+      ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+      // 随机画10个图形
+      for (let i = 0; i < 10; i++) {
+        ctx.fillStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(
+          100,
+          255
+        )},${this.getRandom(100, 255)})`;
+        ctx.strokeStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(
+          100,
+          255
+        )},${this.getRandom(100, 255)})`;
+
+        if (this.getRandom(0, 2) > 1) {
+          // 矩形
+          ctx.save();
+          ctx.rotate((this.getRandom(0) * Math.PI) / 180);
+          ctx.fillRect(
+            this.getRandom(-50, this.canvasWidth - 50),
+            this.getRandom(-50, this.canvasHeight - 50),
+            this.getRandom(5, this.canvasWidth / 2 + 5),
+            this.getRandom(5, this.canvasHeight / 2 + 5)
+          );
+          ctx.restore();
+        } else {
+          // 圆
+          ctx.beginPath();
+          ctx.arc(
+            this.getRandom(0, this.canvasWidth),
+            this.getRandom(0, this.canvasHeight),
+            this.getRandom(5, this.canvasHeight / 2 + 5),
+            this.getRandom(0, Math.PI),
+            2 * Math.PI
+          );
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+      return canvas.toDataURL("image/png");
+    },
     // 开始判定
     submit() {
-      console.log(
-        "验证,",
-        this.pinX,
-        this.styleWidth,
-        this.canvasWidth,
-        20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)),
+      // 偏差
+      const x = Math.abs(
         this.pinX -
           (this.styleWidth - 50) +
           20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)) -
           3
       );
-      if (
-        Math.abs(
-          this.pinX -
-            (this.styleWidth - 50) +
-            20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)) -
-            3
-        ) < 10
-      ) {
+      if (x < 10) {
         // 成功
         this.infoText = this.successText;
         this.infoBoxFail = false;
@@ -327,7 +380,7 @@ export default {
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
           // 成功的回调
-          this.$emit("successCallback");
+          this.$emit("onSuccess", x);
         }, 800);
       } else {
         // 失败
@@ -336,8 +389,8 @@ export default {
         this.infoBoxShow = true;
         this.isCanSlide = false;
         // 失败的回调
-        this.$emit("failCallback");
-        // 1秒后重置
+        this.$emit("onFail", x);
+        // 800ms后重置
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
           this.reset();
@@ -358,7 +411,7 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="less">
 .vue-puzzle-vcode {
   position: fixed;
   top: 0;
@@ -387,7 +440,6 @@ export default {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   .auth-body {
     position: relative;
-    height: 160px;
     overflow: hidden;
     border-radius: 3px;
     .loading-box {
@@ -396,12 +448,20 @@ export default {
       left: 0;
       bottom: 0;
       right: 0;
-      background-color: rgba(0, 0, 0, 0.4);
-      z-index: 2;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 20;
       opacity: 1;
       transition: opacity 200ms;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       &.hide {
         opacity: 0;
+        pointer-events: none;
+      }
+      img {
+        width: 120px;
+        height: auto;
       }
     }
     .info-box {
@@ -425,7 +485,7 @@ export default {
         transform: translateY(0);
       }
       &.fail {
-        background-color: #ce3f83;
+        background-color: #ce594b;
       }
     }
     .auth-canvas2 {
@@ -457,6 +517,20 @@ export default {
       z-index: 3;
       &.show {
         transition: transform 600ms;
+      }
+    }
+    .reset {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 35px;
+      height: auto;
+      z-index: 12;
+      cursor: pointer;
+      transition: transform 200ms;
+      transform: rotate(0deg);
+      &:hover {
+        transform: rotate(-90deg);
       }
     }
   }

@@ -1,15 +1,15 @@
 <template>
   <div>
-    <AuthModelMy :imgs="imgs"
-                 :show="show"
+    <AuthModelMy :show="show"
                  @onClose="onTestClose" />
 
     <hr />
-    <button @click="onTest">出现</button>
+    <button @click="onTest">验证</button>
   </div>
 </template>
 <script>
 import AuthModelMy from "../../dist/main.js";
+// import AuthModelMy from "../../src/app.vue";
 import Img1 from "./assets/1.jpg";
 export default {
   data() {
