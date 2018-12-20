@@ -1,4 +1,94 @@
-# vue-puzzle-vcode
-vue 纯前端的拼图人机验证、右滑拼图验证
+# vue-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue-puzzle-vcode.svg)](https://www.npmjs.com/package/vue-puzzle-vcode) [![npm](https://img.shields.io/npm/dy/vue-puzzle-vcode.svg)](https://www.npmjs.com/package/vue-puzzle-vcode)
 
-还没做完
+Vue 纯前端的拼图人机验证、右滑拼图验证<br/>
+我知道有第 3 方的很好用,比如 GEETEST 的拼图验证，但要引入 SDK 跟后台配合，还有接口交互。<br/>
+太麻烦了，有时候突然改需求来不及弄，为了应付老板，就弄了个纯前端的随便验一下得了。
+
+![img](https://github.com/javaLuo/vue-puzzle-vcode/blob/master/public/demo.gif)
+
+### 安装
+
+```
+  npm install vue-puzzle-vcode --save
+```
+
+### 使用
+
+```
+import Vcode from "vue-puzzle-vcode";
+
+<Vcode
+  :show="isShow"
+  @onSuccess="onSuccess"
+/>
+```
+
+### 最简单例子
+
+```
+<template>
+  <Vcode
+    :show="isShow"
+    @onSuccess="onSuccess"
+  />
+  <button @click="onSubmit">登录</button>
+</template>
+
+<script>
+  export default {
+    data(){
+      return {
+        isShow: false, // 验证码模态框是否出现
+      }
+    },
+    methods:{
+      onSubmit(){
+        this.isShow = true;
+      },
+      onSuccess(msg){
+        // 用户通过了验证, msg是用户移动拼图的位置和目标位置的偏差px值
+        this.isShow = false; // 通过验证后，需要自行隐藏模态框
+      }
+    }
+  }
+</script>
+```
+
+### 参数
+
+| 字段         | 类型    | 默认值             | 说明                   |
+| ------------ | ------- | ------------------ | ---------------------- |
+| show         | Boolean | false              | 是否显示验证码弹框     |
+| canvasWidth  | Number  | 310                | 主图区域的宽度         |
+| canvasHeight | Number  | 160                | 主图区域的高度         |
+| successText  | String  | \"验证通过！\"     | 验证通过时的提示文字   |
+| imgs         | Array   | null               | 自定义图片，见下方例子 |
+| successText  | String  | "验证通过！"       | 验证成功时的提示文字   |
+| failText     | String  | "验证失败，请重试" | 验证失败时的提示文字   |
+| sliderText   | String  | "拖动滑块完成拼图" | 下方滑动条里到数字     |
+
+### 自定义图片
+
+```
+<template>
+  <Vcode :imgs="[Img1, Img2]" />
+</template>
+
+<script>
+import Img1 from '~/assets/img1.png';
+import Img2 from '~/assets/img2.png';
+
+export default {
+  data(){
+    return {
+      Img1,
+      Img2
+    }
+  }
+}
+</script>
+```
+### 说明
+
+* 当不传递imgs字段或图片加载出错时，会自动生成随机图片
+* 模态框的显示和隐藏完全由父级控制，所以用户通过验证后，需要自行隐藏模态框

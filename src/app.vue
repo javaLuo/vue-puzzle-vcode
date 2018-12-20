@@ -84,10 +84,7 @@ export default {
     show: { type: Boolean, default: false },
     // 所有的背景图片
     imgs: {
-      type: Array,
-      defalut: () => {
-        return [];
-      }
+      type: Array
     },
     successText: {
       type: String,
