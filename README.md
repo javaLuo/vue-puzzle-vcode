@@ -66,7 +66,6 @@ import Vcode from "vue-puzzle-vcode";
 | show         | Boolean | false              | 是否显示验证码弹框     |
 | canvasWidth  | Number  | 310                | 主图区域的宽度         |
 | canvasHeight | Number  | 160                | 主图区域的高度         |
-| successText  | String  | \"验证通过！\"     | 验证通过时的提示文字   |
 | imgs         | Array   | null               | 自定义图片，见下方例子 |
 | successText  | String  | "验证通过！"       | 验证成功时的提示文字   |
 | failText     | String  | "验证失败，请重试" | 验证失败时的提示文字   |
