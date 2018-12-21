@@ -36,11 +36,15 @@ import Vcode from "vue-puzzle-vcode";
 </template>
 
 <script>
+  import Vcode from "vue-puzzle-vcode";
   export default {
     data(){
       return {
         isShow: false, // 验证码模态框是否出现
       }
+    },
+    components:{
+      Vcode
     },
     methods:{
       onSubmit(){
