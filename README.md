@@ -30,6 +30,7 @@ import Vcode from "vue-puzzle-vcode";
   <Vcode
     :show="isShow"
     @onSuccess="onSuccess"
+    @onClose="onClose"
   />
   <button @click="onSubmit">登录</button>
 </template>
@@ -45,9 +46,13 @@ import Vcode from "vue-puzzle-vcode";
       onSubmit(){
         this.isShow = true;
       },
+      // 用户通过了验证, msg是用户移动拼图的位置和目标位置的偏差px值
       onSuccess(msg){
-        // 用户通过了验证, msg是用户移动拼图的位置和目标位置的偏差px值
         this.isShow = false; // 通过验证后，需要自行隐藏模态框
+      },
+      // 用户点击遮罩层，应该关闭模态框
+      onClose(){
+        this.isShow = false;
       }
     }
   }
@@ -95,6 +100,9 @@ export default {
 }
 </script>
 ```
+* 也可以是网络图片完整URL路径，但注意图片跨域问题
+
+
 ### 说明
 
 * 当不传递imgs字段或图片加载出错时，会自动生成随机图片
