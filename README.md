@@ -73,7 +73,7 @@ import Vcode from "vue-puzzle-vcode";
 | imgs         | Array   | null               | 自定义图片，见下方例子 |
 | successText  | String  | "验证通过！"       | 验证成功时的提示文字   |
 | failText     | String  | "验证失败，请重试" | 验证失败时的提示文字   |
-| sliderText   | String  | "拖动滑块完成拼图" | 下方滑动条里到数字     |
+| sliderText   | String  | "拖动滑块完成拼图" | 下方滑动条里的文字     |
 
 ### 事件
 | 事件名    | 返回值 | 说明                                                         |
