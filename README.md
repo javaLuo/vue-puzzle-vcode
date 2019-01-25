@@ -25,7 +25,7 @@ import Vcode from "vue-puzzle-vcode";
 
 ### 最简单例子
 
-```
+```vue
 <template>
   <Vcode
     :show="isShow"
