@@ -84,7 +84,7 @@ import Vcode from "vue-puzzle-vcode";
 
 ### 自定义图片
 
-```
+```vue
 <template>
   <Vcode :imgs="[Img1, Img2]" />
 </template>
