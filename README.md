@@ -51,9 +51,9 @@ import Vcode from "vue-puzzle-vcode";
       onSubmit(){
         this.isShow = true;
       },
-      // 用户通过了验证, msg是用户移动拼图的位置和目标位置的偏差px值
+      // 用户通过了验证
       onSuccess(msg){
-        this.isShow = false; // 通过验证后，需要自行隐藏模态框
+        this.isShow = false; // 通过验证后，需要手动隐藏模态框
       },
       // 用户点击遮罩层，应该关闭模态框
       onClose(){
