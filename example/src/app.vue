@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       imgs: [Img1],
-      show: false
+      show: true
     };
   },
   components: {

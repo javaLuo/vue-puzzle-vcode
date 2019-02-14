@@ -104,7 +104,7 @@ export default {
   mounted() {
     document.addEventListener("mousemove", this.onRangeMouseMove, false);
     document.addEventListener("mouseup", this.onRangeMouseUp, false);
-    this.init();
+    this.reset();
   },
   beforeDestroy() {
     clearTimeout(this.timer1);
