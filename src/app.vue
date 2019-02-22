@@ -7,15 +7,18 @@
          @mousedown.stop>
       <div class="auth-body"
            :style="`height: ${canvasHeight}px`">
+        <!-- 主图，有缺口 -->
         <canvas ref="canvas1"
                 :width="canvasWidth"
                 :height="canvasHeight"
                 :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
+        <!-- 成功后显示的完整图 -->
         <canvas ref="canvas3"
                 :class="['auth-canvas3',{'show': isSuccess}]"
                 :width="canvasWidth"
                 :height="canvasHeight"
                 :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
+        <!-- 小图 -->
         <canvas width="70"
                 class="auth-canvas2"
                 :height="canvasHeight"
@@ -183,37 +186,56 @@ export default {
       const ctx = c.getContext("2d");
       const ctx2 = c2.getContext("2d");
       const ctx3 = c3.getContext("2d");
-      const img = new Image();
-
+      const img = document.createElement("img");
       ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       ctx2.clearRect(0, 0, 70, this.canvasHeight);
 
       // 取一个随机坐标，作为拼图块的位置
       this.pinX = this.getRandom(90, this.canvasWidth - 90); // 留20的边距
       this.pinY = this.getRandom(20, this.canvasHeight - 90);
-      img.crossOrigin = "Anonymous";
+      img.crossOrigin = "anonymous"; // 匿名，想要获取跨域的图片
       img.onload = () => {
-        // 先画小图
         ctx.save();
+        // 先画小图
         this.paintBrick(ctx);
+        ctx.closePath();
+        if (
+          !(
+            navigator.userAgent.includes("Firefox") &&
+            navigator.userAgent.includes("Windows")
+          )
+        ) {
+          // 非火狐，在此画外阴影
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.shadowColor = "#000";
+          ctx.shadowBlur = 5;
+          ctx.fill();
+        }
+
+        ctx.clip(); // 按照外阴影区域切割
+
+        ctx.save();
         // 小图外阴影
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         ctx.shadowColor = "#000";
         ctx.shadowBlur = 3;
         ctx.fill();
-        ctx.clip();
-
+        ctx.restore();
         ctx.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
         ctx3.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
+
         // 设置小图的内阴影
         ctx.globalCompositeOperation = "source-atop";
+
         this.paintBrick(ctx);
+
         ctx.arc(this.pinX + 35, this.pinY + 35, 80, 0, Math.PI * 2, true);
         ctx.closePath();
         ctx.shadowColor = "rgba(255, 255, 255, .8)";
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+        ctx.shadowOffsetX = -1;
+        ctx.shadowOffsetY = -1;
         ctx.shadowBlur = 10;
         ctx.fillStyle = "#ffffaa";
         ctx.fill();
@@ -226,9 +248,9 @@ export default {
           this.pinY + 50
         );
         ctx2.putImageData(imgData, 0, this.pinY - 20);
-        ctx.restore();
 
         // 清理
+        ctx.restore();
         ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
         // 画缺口
@@ -334,23 +356,24 @@ export default {
         if (this.getRandom(0, 2) > 1) {
           // 矩形
           ctx.save();
-          ctx.rotate((this.getRandom(0) * Math.PI) / 180);
+          ctx.rotate((this.getRandom(-90, 90) * Math.PI) / 180);
           ctx.fillRect(
-            this.getRandom(-50, this.canvasWidth - 50),
-            this.getRandom(-50, this.canvasHeight - 50),
-            this.getRandom(5, this.canvasWidth / 2 + 5),
-            this.getRandom(5, this.canvasHeight / 2 + 5)
+            this.getRandom(-20, this.canvasWidth - 20),
+            this.getRandom(-20, this.canvasHeight - 20),
+            this.getRandom(10, this.canvasWidth / 2 + 10),
+            this.getRandom(10, this.canvasHeight / 2 + 10)
           );
           ctx.restore();
         } else {
           // 圆
           ctx.beginPath();
+          const ran = this.getRandom(-Math.PI, Math.PI);
           ctx.arc(
             this.getRandom(0, this.canvasWidth),
             this.getRandom(0, this.canvasHeight),
-            this.getRandom(5, this.canvasHeight / 2 + 5),
-            this.getRandom(0, Math.PI),
-            2 * Math.PI
+            this.getRandom(10, this.canvasHeight / 2 + 10),
+            ran,
+            ran + Math.PI * 1.5
           );
           ctx.closePath();
           ctx.fill();
