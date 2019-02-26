@@ -201,8 +201,8 @@ export default {
         ctx.closePath();
         if (
           !(
-            navigator.userAgent.includes("Firefox") &&
-            navigator.userAgent.includes("Windows")
+            navigator.userAgent.indexOf("Firefox") >= 0 &&
+            navigator.userAgent.indexOf("Windows") >= 0
           )
         ) {
           // 非火狐，在此画外阴影
