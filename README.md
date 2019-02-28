@@ -8,13 +8,13 @@ Vue 纯前端的拼图人机验证、右滑拼图验证<br/>
 
 ### 安装
 
-```
+```node
   npm install vue-puzzle-vcode --save
 ```
 
 ### 使用
 
-```
+```vue
 import Vcode from "vue-puzzle-vcode";
 
 <Vcode
