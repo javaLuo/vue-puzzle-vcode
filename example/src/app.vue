@@ -21,11 +21,17 @@ export default {
   components: {
     AuthModelMy
   },
+  mounted() {
+    // AuthModelMy({
+    //   show: this.show
+    // });
+  },
   methods: {
     onTest() {
       this.show = true;
     },
     onTestClose() {
+      console.log("出发：", this.show);
       this.show = false;
     }
   }

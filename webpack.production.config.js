@@ -14,7 +14,7 @@ module.exports = {
     publicPath: '/dist/',
     library: 'vue-puzzle-vcode',
     libraryTarget: 'umd',
-    umdNamedDefine: true,
+    // umdNamedDefine: true,
   },
   externals: {
     vue: 'vue',
@@ -28,7 +28,7 @@ module.exports = {
       },
       {
         // .js .jsx用babel解析
-        test: /\.js?$/,
+        test: /\.(js|jsx)?$/,
         use: ['babel-loader'],
         include: path.resolve(__dirname, 'src'),
       },

@@ -1,6 +1,7 @@
 <template>
   <!-- 本体部分 -->
-  <div :class="['vue-puzzle-vcode', {'show': show}]"
+  <div :id="id"
+       :class="['vue-puzzle-vcode', {'show': show}]"
        @mousedown="onCloseMouseDown"
        @mouseup="onCloseMouseUp">
     <div class="vue-auth-box"
@@ -81,6 +82,7 @@ export default {
   },
   /** 父级参数 **/
   props: {
+    id: { type: String },
     canvasWidth: { type: Number, default: 310 }, // 主canvas的宽
     canvasHeight: { type: Number, default: 160 }, // 主canvas的高
     // 是否出现，由父级控制
@@ -105,12 +107,17 @@ export default {
 
   /** 生命周期 **/
   mounted() {
+    document.body.appendChild(this.$el);
     document.addEventListener("mousemove", this.onRangeMouseMove, false);
     document.addEventListener("mouseup", this.onRangeMouseUp, false);
+    if (this.show) {
+      document.body.classList.add("vue-puzzle-overflow");
+    }
     this.reset();
   },
   beforeDestroy() {
     clearTimeout(this.timer1);
+    document.body.removeChild(this.$el);
     document.removeEventListener("mousemove", this.onRangeMouseMove, false);
     document.removeEventListener("mouseup", this.onRangeMouseUp, false);
   },
@@ -120,7 +127,10 @@ export default {
     show(newV) {
       // 每次出现都应该重新初始化
       if (newV) {
+        document.body.classList.add("vue-puzzle-overflow");
         this.reset();
+      } else {
+        document.body.classList.remove("vue-puzzle-overflow");
       }
     }
   },
@@ -624,5 +634,8 @@ export default {
       }
     }
   }
+}
+.vue-puzzle-overflow {
+  overflow: hidden !important;
 }
 </style>
