@@ -2,7 +2,7 @@
 
 const path = require('path'); // 获取绝对路径用
 const webpack = require('webpack'); // webpack核心
-const CleanWebpackPlugin = require('clean-webpack-plugin'); // 每次打包前清除旧的build文件夹
+const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 每次打包前清除旧的build文件夹
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
@@ -58,7 +58,7 @@ module.exports = {
       },
     ],
   },
-  plugins: [new VueLoaderPlugin(), new CleanWebpackPlugin(['dist'])],
+  plugins: [new VueLoaderPlugin(), new CleanWebpackPlugin()],
   resolve: {
     extensions: ['.js', '.vue', '.less', '.css'], //后缀名自动补全
     alias: {

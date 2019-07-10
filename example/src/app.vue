@@ -8,8 +8,8 @@
   </div>
 </template>
 <script>
-import AuthModelMy from "../../dist/main.js";
-// import AuthModelMy from "../../src/app.vue";
+// import AuthModelMy from "../../dist/main.js";
+import AuthModelMy from "../../src/app.vue";
 import Img1 from "./assets/1.jpg";
 export default {
   data() {

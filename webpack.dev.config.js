@@ -3,7 +3,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const PUBLIC_PATH = '/';
 module.exports = {
   mode: 'development',
-  entry: path.join(__dirname, 'example', 'main.js'),
+  entry: [path.join(__dirname, 'example', 'main.js')],
   output: {
     filename: 'bundle.js',
     publicPath: PUBLIC_PATH,
@@ -52,8 +52,5 @@ module.exports = {
   plugins: [new VueLoaderPlugin()],
   resolve: {
     extensions: ['.js', '.vue', '.less', '.css'], //后缀名自动补全
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
   },
 };
