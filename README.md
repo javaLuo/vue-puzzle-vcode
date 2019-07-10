@@ -22,6 +22,10 @@ import Vcode from "vue-puzzle-vcode";
   @onSuccess="onSuccess"
 />
 ```
+### IE
+我没加`babel-polyfill`,所以在IE里会报错：`SCRIPT1002: 语法错误`，<br/>
+需要兼容IE的朋友，请直接复制`src/app.vue`和`src/assets`这两个东西到自己的项目里，给`app.vue`随便改个名字，就是个普通vue组件，直接用即可。<br/>
+`src/assets`里是两张小图片，`app.vue`中有引用，注意自己匹配一下引用路径
 
 ### 最简单例子
 
