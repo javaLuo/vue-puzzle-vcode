@@ -115,7 +115,9 @@ export default {
     document.addEventListener("mousemove", this.onRangeMouseMove, false);
     document.addEventListener("mouseup", this.onRangeMouseUp, false);
 
-    document.addEventListener("touchmove", this.onRangeMouseMove, false);
+    document.addEventListener("touchmove", this.onRangeMouseMove, {
+      passive: false
+    });
     document.addEventListener("touchend", this.onRangeMouseUp, false);
     if (this.show) {
       document.body.classList.add("vue-puzzle-overflow");
@@ -128,7 +130,9 @@ export default {
     document.removeEventListener("mousemove", this.onRangeMouseMove, false);
     document.removeEventListener("mouseup", this.onRangeMouseUp, false);
 
-    document.removeEventListener("touchmove", this.onRangeMouseMove, false);
+    document.removeEventListener("touchmove", this.onRangeMouseMove, {
+      passive: false
+    });
     document.removeEventListener("touchend", this.onRangeMouseUp, false);
   },
 
@@ -173,7 +177,6 @@ export default {
     },
     // 鼠标按下准备拖动
     onRangeMouseDown(e) {
-      console.log("拖动开始：", e);
       if (this.isCanSlide) {
         this.mouseDown = true;
         this.startWidth = this.$refs["range-slider"].clientWidth;
@@ -184,7 +187,7 @@ export default {
     // 鼠标移动
     onRangeMouseMove(e) {
       if (this.mouseDown) {
-        console.log("touchmove:", e.clientX || e.changedTouches[0].clientX);
+        e.preventDefault();
         this.newX = e.clientX || e.changedTouches[0].clientX;
       }
     },
