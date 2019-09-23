@@ -3,9 +3,12 @@
   <div :id="id"
        :class="['vue-puzzle-vcode', {'show': show}]"
        @mousedown="onCloseMouseDown"
-       @mouseup="onCloseMouseUp">
+       @mouseup="onCloseMouseUp"
+       @touchstart="onCloseMouseDown"
+       @touchend="onCloseMouseUp">
     <div class="vue-auth-box"
-         @mousedown.stop>
+         @mousedown.stop
+         @touchstart.stop>
       <div class="auth-body"
            :style="`height: ${canvasHeight}px`">
         <!-- 主图，有缺口 -->
@@ -42,7 +45,8 @@
                ref="range-slider"
                :style="`width:${styleWidth}px`">
             <div :class="['range-btn', {'isDown': mouseDown}]"
-                 @mousedown="onRangeMouseDown($event)">
+                 @mousedown="onRangeMouseDown($event)"
+                 @touchstart="onRangeMouseDown($event)">
               <div></div>
               <div></div>
               <div></div>
@@ -110,6 +114,9 @@ export default {
     document.body.appendChild(this.$el);
     document.addEventListener("mousemove", this.onRangeMouseMove, false);
     document.addEventListener("mouseup", this.onRangeMouseUp, false);
+
+    document.addEventListener("touchmove", this.onRangeMouseMove, false);
+    document.addEventListener("touchend", this.onRangeMouseUp, false);
     if (this.show) {
       document.body.classList.add("vue-puzzle-overflow");
     }
@@ -120,6 +127,9 @@ export default {
     document.body.removeChild(this.$el);
     document.removeEventListener("mousemove", this.onRangeMouseMove, false);
     document.removeEventListener("mouseup", this.onRangeMouseUp, false);
+
+    document.removeEventListener("touchmove", this.onRangeMouseMove, false);
+    document.removeEventListener("touchend", this.onRangeMouseUp, false);
   },
 
   /** 监听 **/
@@ -163,17 +173,19 @@ export default {
     },
     // 鼠标按下准备拖动
     onRangeMouseDown(e) {
+      console.log("拖动开始：", e);
       if (this.isCanSlide) {
         this.mouseDown = true;
         this.startWidth = this.$refs["range-slider"].clientWidth;
-        this.newX = e.clientX;
-        this.startX = e.clientX;
+        this.newX = e.clientX || e.changedTouches[0].clientX;
+        this.startX = e.clientX || e.changedTouches[0].clientX;
       }
     },
     // 鼠标移动
     onRangeMouseMove(e) {
       if (this.mouseDown) {
-        this.newX = e.clientX;
+        console.log("touchmove:", e.clientX || e.changedTouches[0].clientX);
+        this.newX = e.clientX || e.changedTouches[0].clientX;
       }
     },
     // 鼠标抬起
