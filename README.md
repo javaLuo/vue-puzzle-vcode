@@ -31,12 +31,14 @@ import Vcode from "vue-puzzle-vcode";
 
 ```vue
 <template>
-  <Vcode
-    :show="isShow"
-    @onSuccess="onSuccess"
-    @onClose="onClose"
-  />
-  <button @click="onSubmit">登录</button>
+  <div>
+    <Vcode
+      :show="isShow"
+      @onSuccess="onSuccess"
+      @onClose="onClose"
+    />
+    <button @click="onSubmit">登录</button>
+  </div>
 </template>
 
 <script>
