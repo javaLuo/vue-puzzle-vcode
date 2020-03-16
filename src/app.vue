@@ -1,52 +1,48 @@
 <template>
   <!-- 本体部分 -->
-  <div :id="id"
-       :class="['vue-puzzle-vcode', {'show': show}]"
-       @mousedown="onCloseMouseDown"
-       @mouseup="onCloseMouseUp"
-       @touchstart="onCloseMouseDown"
-       @touchend="onCloseMouseUp">
-    <div class="vue-auth-box"
-         @mousedown.stop
-         @touchstart.stop>
-      <div class="auth-body"
-           :style="`height: ${canvasHeight}px`">
+  <div
+    :id="id"
+    :class="['vue-puzzle-vcode', { show: show }]"
+    @mousedown="onCloseMouseDown"
+    @mouseup="onCloseMouseUp"
+    @touchstart="onCloseMouseDown"
+    @touchend="onCloseMouseUp"
+  >
+    <div class="vue-auth-box" @mousedown.stop @touchstart.stop>
+      <div class="auth-body" :style="`height: ${canvasHeight}px`">
         <!-- 主图，有缺口 -->
-        <canvas ref="canvas1"
-                :width="canvasWidth"
-                :height="canvasHeight"
-                :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
+        <canvas ref="canvas1" :width="canvasWidth" :height="canvasHeight" :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
         <!-- 成功后显示的完整图 -->
-        <canvas ref="canvas3"
-                :class="['auth-canvas3',{'show': isSuccess}]"
-                :width="canvasWidth"
-                :height="canvasHeight"
-                :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
+        <canvas
+          ref="canvas3"
+          :class="['auth-canvas3', { show: isSuccess }]"
+          :width="canvasWidth"
+          :height="canvasHeight"
+          :style="`width:${canvasWidth}px;height:${canvasHeight}px`"
+        />
         <!-- 小图 -->
-        <canvas width="70"
-                class="auth-canvas2"
-                :height="canvasHeight"
-                ref="canvas2"
-                :style="`width:70px;height:${canvasHeight}px;transform:translateX(${styleWidth - 50 - 20*((styleWidth - 50)/(canvasWidth-50))}px)`" />
-        <div :class="['loading-box',{'hide': !loading}]">
-          <img :src="loadingSvg">
+        <canvas
+          width="70"
+          class="auth-canvas2"
+          :height="canvasHeight"
+          ref="canvas2"
+          :style="`width:70px;height:${canvasHeight}px;transform:translateX(${styleWidth - 50 - 20 * ((styleWidth - 50) / (canvasWidth - 50))}px)`"
+        />
+        <div :class="['loading-box', { hide: !loading }]">
+          <img :src="loadingSvg" />
         </div>
-        <div :class="['info-box',{'show':infoBoxShow},{'fail':infoBoxFail}]">{{infoText}}</div>
-        <div :class="['flash',{'show': isSuccess}]"
-             :style="`transform: translateX(${isSuccess ? `${canvasWidth + 100}px` : '-50px'}) skew(-30deg, 0);`"></div>
-        <img class="reset"
-             @click="reset"
-             :src="resetSvg">
+        <div :class="['info-box', { show: infoBoxShow }, { fail: infoBoxFail }]">{{ infoText }}</div>
+        <div
+          :class="['flash', { show: isSuccess }]"
+          :style="`transform: translateX(${isSuccess ? `${canvasWidth + 100}px` : '-50px'}) skew(-30deg, 0);`"
+        ></div>
+        <img class="reset" @click="reset" :src="resetSvg" />
       </div>
       <div class="auth-control">
         <div class="range-box">
-          <div class="range-text">{{sliderText}}</div>
-          <div class="range-slider"
-               ref="range-slider"
-               :style="`width:${styleWidth}px`">
-            <div :class="['range-btn', {'isDown': mouseDown}]"
-                 @mousedown="onRangeMouseDown($event)"
-                 @touchstart="onRangeMouseDown($event)">
+          <div class="range-text">{{ sliderText }}</div>
+          <div class="range-slider" ref="range-slider" :style="`width:${styleWidth}px`">
+            <div :class="['range-btn', { isDown: mouseDown }]" @mousedown="onRangeMouseDown($event)" @touchstart="onRangeMouseDown($event)">
               <div></div>
               <div></div>
               <div></div>
@@ -56,7 +52,6 @@
       </div>
     </div>
   </div>
-
 </template>
 <script>
 import resetSvg from "./assets/reset.png";
@@ -81,7 +76,7 @@ export default {
       closeDown: false, // 为了解决Mac上的click BUG
       isSuccess: false, // 验证成功
       resetSvg,
-      loadingSvg
+      loadingSvg,
     };
   },
   /** 父级参数 **/
@@ -93,20 +88,20 @@ export default {
     show: { type: Boolean, default: false },
     // 所有的背景图片
     imgs: {
-      type: Array
+      type: Array,
     },
     successText: {
       type: String,
-      default: "验证通过！"
+      default: "验证通过！",
     },
     failText: {
       type: String,
-      default: "验证失败，请重试"
+      default: "验证失败，请重试",
     },
     sliderText: {
       type: String,
-      default: "拖动滑块完成拼图"
-    }
+      default: "拖动滑块完成拼图",
+    },
   },
 
   /** 生命周期 **/
@@ -116,7 +111,7 @@ export default {
     document.addEventListener("mouseup", this.onRangeMouseUp, false);
 
     document.addEventListener("touchmove", this.onRangeMouseMove, {
-      passive: false
+      passive: false,
     });
     document.addEventListener("touchend", this.onRangeMouseUp, false);
     if (this.show) {
@@ -131,7 +126,7 @@ export default {
     document.removeEventListener("mouseup", this.onRangeMouseUp, false);
 
     document.removeEventListener("touchmove", this.onRangeMouseMove, {
-      passive: false
+      passive: false,
     });
     document.removeEventListener("touchend", this.onRangeMouseUp, false);
   },
@@ -146,7 +141,7 @@ export default {
       } else {
         document.body.classList.remove("vue-puzzle-overflow");
       }
-    }
+    },
   },
 
   /** 计算属性 **/
@@ -154,7 +149,7 @@ export default {
     styleWidth() {
       const w = this.startWidth + this.newX - this.startX;
       return w < 50 ? 50 : w > this.canvasWidth ? this.canvasWidth : w;
-    }
+    },
   },
 
   /** 方法 **/
@@ -163,7 +158,7 @@ export default {
     onClose() {
       if (!this.mouseDown) {
         clearTimeout(this.timer1);
-        this.$emit("onClose");
+        this.$emit("close");
       }
     },
     onCloseMouseDown() {
@@ -192,7 +187,7 @@ export default {
       }
     },
     // 鼠标抬起
-    onRangeMouseUp(e) {
+    onRangeMouseUp() {
       if (this.mouseDown) {
         this.mouseDown = false;
         this.submit();
@@ -224,12 +219,7 @@ export default {
         // 先画小图
         this.paintBrick(ctx);
         ctx.closePath();
-        if (
-          !(
-            navigator.userAgent.indexOf("Firefox") >= 0 &&
-            navigator.userAgent.indexOf("Windows") >= 0
-          )
-        ) {
+        if (!(navigator.userAgent.indexOf("Firefox") >= 0 && navigator.userAgent.indexOf("Windows") >= 0)) {
           // 非火狐，在此画外阴影
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
@@ -270,7 +260,7 @@ export default {
           this.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
           this.pinY - 20,
           this.pinX + 75,
-          this.pinY + 50
+          this.pinY + 50,
         );
         ctx2.putImageData(imgData, 0, this.pinY - 20);
 
@@ -324,14 +314,7 @@ export default {
       ctx.beginPath();
       ctx.moveTo(this.pinX, this.pinY);
       ctx.lineTo(this.pinX + 15, this.pinY);
-      ctx.bezierCurveTo(
-        this.pinX + 15,
-        this.pinY - 20,
-        this.pinX + 15 + 20,
-        this.pinY - 20,
-        this.pinX + 15 + 20,
-        this.pinY
-      );
+      ctx.bezierCurveTo(this.pinX + 15, this.pinY - 20, this.pinX + 15 + 20, this.pinY - 20, this.pinX + 15 + 20, this.pinY);
       ctx.lineTo(this.pinX + 15 + 20 + 15, this.pinY);
       ctx.lineTo(this.pinX + 15 + 20 + 15, this.pinY + 15);
       ctx.bezierCurveTo(
@@ -340,20 +323,13 @@ export default {
         this.pinX + 15 + 20 + 15 + 20,
         this.pinY + 15 + 20,
         this.pinX + 15 + 20 + 15,
-        this.pinY + 15 + 20
+        this.pinY + 15 + 20,
       );
       ctx.lineTo(this.pinX + 15 + 20 + 15, this.pinY + 15 + 20 + 15);
       ctx.lineTo(this.pinX, this.pinY + 15 + 20 + 15);
       ctx.lineTo(this.pinX, this.pinY + 15 + 20);
 
-      ctx.bezierCurveTo(
-        this.pinX + 20,
-        this.pinY + 15 + 20,
-        this.pinX + 20,
-        this.pinY + 15,
-        this.pinX,
-        this.pinY + 15
-      );
+      ctx.bezierCurveTo(this.pinX + 20, this.pinY + 15 + 20, this.pinX + 20, this.pinY + 15, this.pinX, this.pinY + 15);
       ctx.lineTo(this.pinX, this.pinY);
     },
     // 用canvas随机生成图片
@@ -362,21 +338,12 @@ export default {
       const ctx = canvas.getContext("2d");
       canvas.width = this.canvasWidth;
       canvas.height = this.canvasHeight;
-      ctx.fillStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(
-        100,
-        255
-      )},${this.getRandom(100, 255)})`;
+      ctx.fillStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(100, 255)},${this.getRandom(100, 255)})`;
       ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       // 随机画10个图形
       for (let i = 0; i < 10; i++) {
-        ctx.fillStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(
-          100,
-          255
-        )},${this.getRandom(100, 255)})`;
-        ctx.strokeStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(
-          100,
-          255
-        )},${this.getRandom(100, 255)})`;
+        ctx.fillStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(100, 255)},${this.getRandom(100, 255)})`;
+        ctx.strokeStyle = `rgb(${this.getRandom(100, 255)},${this.getRandom(100, 255)},${this.getRandom(100, 255)})`;
 
         if (this.getRandom(0, 2) > 1) {
           // 矩形
@@ -386,7 +353,7 @@ export default {
             this.getRandom(-20, this.canvasWidth - 20),
             this.getRandom(-20, this.canvasHeight - 20),
             this.getRandom(10, this.canvasWidth / 2 + 10),
-            this.getRandom(10, this.canvasHeight / 2 + 10)
+            this.getRandom(10, this.canvasHeight / 2 + 10),
           );
           ctx.restore();
         } else {
@@ -398,7 +365,7 @@ export default {
             this.getRandom(0, this.canvasHeight),
             this.getRandom(10, this.canvasHeight / 2 + 10),
             ran,
-            ran + Math.PI * 1.5
+            ran + Math.PI * 1.5,
           );
           ctx.closePath();
           ctx.fill();
@@ -409,12 +376,7 @@ export default {
     // 开始判定
     submit() {
       // 偏差
-      const x = Math.abs(
-        this.pinX -
-          (this.styleWidth - 50) +
-          20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)) -
-          3
-      );
+      const x = Math.abs(this.pinX - (this.styleWidth - 50) + 20 * ((this.styleWidth - 50) / (this.canvasWidth - 50)) - 3);
       if (x < 10) {
         // 成功
         this.infoText = this.successText;
@@ -426,7 +388,7 @@ export default {
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
           // 成功的回调
-          this.$emit("onSuccess", x);
+          this.$emit("success", x);
         }, 800);
       } else {
         // 失败
@@ -435,7 +397,7 @@ export default {
         this.infoBoxShow = true;
         this.isCanSlide = false;
         // 失败的回调
-        this.$emit("onFail", x);
+        this.$emit("fail", x);
         // 800ms后重置
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
@@ -453,8 +415,8 @@ export default {
       this.startX = 0; // 鼠标按下时的X
       this.newX = 0; // 鼠标当前的偏移X
       this.init();
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less">
