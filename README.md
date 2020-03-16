@@ -6,6 +6,14 @@ Vue 纯前端的拼图人机验证、右滑拼图验证<br/>
 ![img](public/demo.gif)
 
 
+## 重要更新
+
+2020/03/16 v1.1.0 **事件名改变** <br/>
+```
+@onSuccess -> @success
+@onClose -> @close
+@onFail -> @fail
+```
 ### 安装
 
 ```node
@@ -34,10 +42,10 @@ import Vcode from "vue-puzzle-vcode";
   <div>
     <Vcode
       :show="isShow"
-      @onSuccess="onSuccess"
-      @onClose="onClose"
+      @success="success"
+      @close="close"
     />
-    <button @click="onSubmit">登录</button>
+    <button @click="submit">登录</button>
   </div>
 </template>
 
@@ -53,15 +61,15 @@ import Vcode from "vue-puzzle-vcode";
       Vcode
     },
     methods:{
-      onSubmit(){
+      submit(){
         this.isShow = true;
       },
       // 用户通过了验证
-      onSuccess(msg){
+      success(msg){
         this.isShow = false; // 通过验证后，需要手动隐藏模态框
       },
       // 用户点击遮罩层，应该关闭模态框
-      onClose(){
+      close(){
         this.isShow = false;
       }
     }
@@ -84,9 +92,9 @@ import Vcode from "vue-puzzle-vcode";
 ### 事件
 | 事件名    | 返回值 | 说明                                                         |
 | --------- | ------ | ------------------------------------------------------------ |
-| onSuccess | 偏差值 | 验证通过时会触发，返回值是用户移动的距离跟目标距离的偏差值px |
-| onFail    | 偏差值 | 验证失败时会触发，返回值同上                                 |
-| onClose   | null   | 用户点击遮罩层的回调                                         |
+| success | 偏差值 | 验证通过时会触发，返回值是用户移动的距离跟目标距离的偏差值px |
+| fail    | 偏差值 | 验证失败时会触发，返回值同上                                 |
+| close   | null   | 用户点击遮罩层的回调                                         |
 
 ### 自定义图片
 
