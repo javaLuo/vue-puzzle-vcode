@@ -204,7 +204,7 @@ export default {
      */
     init(withCanvas) {
       this.loading = true;
-
+      this.isCanSlide = false;
       const c = this.$refs.canvas1;
       const c2 = this.$refs.canvas2;
       const c3 = this.$refs.canvas3;
@@ -307,10 +307,12 @@ export default {
         ctx.restore();
 
         this.loading = false;
+        this.isCanSlide = true;
       };
       img.onerror = () => {
         this.init(true); // 如果图片加载错误就重新来，并强制用canvas随机作图
       };
+
       if (!withCanvas && this.imgs && this.imgs.length) {
         let randomNum = this.getRandom(0, this.imgs.length - 1);
         if (randomNum === this.imgIndex) {
