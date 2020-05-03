@@ -84,7 +84,7 @@ export default {
 | show         | Boolean | false              | 是否显示验证码弹框                                                            |
 | canvasWidth  | Number  | 310                | 主图区域的宽度，单位 px                                                       |
 | canvasHeight | Number  | 160                | 主图区域的高度，单位 px                                                       |
-| puzzleScale  | Number  | 1                  | 拼图块的大小比例，0.2 ～ 2 ，数字越大，拼图越大                               |
+| puzzleScale  | Number  | 1                  | 拼图块(小的拼图)的大小比例，0.2 ～ 2 ，数字越大，拼图越大                     |
 | sliderSize   | Number  | 50                 | 左下角用户拖动的那个滑块的尺寸，单位 px                                       |
 | range        | Number  | 10                 | 判断成功的误差范围，单位 px, 滑动的距离和拼图的距离小于等于此值时，会判定重合 |
 | imgs         | Array   | null               | 自定义图片，见下方例子                                                        |
