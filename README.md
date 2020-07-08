@@ -1,8 +1,7 @@
 # vue-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue-puzzle-vcode.svg)](https://www.npmjs.com/package/vue-puzzle-vcode) [![npm downloads](https://img.shields.io/npm/dt/vue-puzzle-vcode.svg)](https://www.npmjs.com/package/vue-puzzle-vcode)
 
 Vue 纯前端的拼图人机验证、右滑拼图验证<br/> 我知道有第 3 方的很好用,比如 GEETEST
-的拼图验证，但要引入 SDK 跟后台配合，还有接口交互。<br/> 太麻烦了，有时候突然改
-需求来不及弄，为了应付老板，就弄了个纯前端的随便验一下得了。
+的拼图验证，但要引入 SDK 跟后台配合，还有接口交互。<br/> 太麻烦了，有时候突然改需求来不及弄，为了应付老板，就弄了个纯前端的随便验一下得了。
 
 **DEMO**: https://isluo.com/work/vue-puzzle-vcode/
 
