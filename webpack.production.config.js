@@ -14,6 +14,7 @@ module.exports = {
     publicPath: '/dist/',
     library: 'vue-puzzle-vcode',
     libraryTarget: 'umd',
+    globalObject: 'this'
     // umdNamedDefine: true,
   },
   externals: {
