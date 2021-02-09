@@ -1,7 +1,7 @@
 <template>
   <div>
     <AuthModelMy :show="show"
-                 @onClose="onTestClose" />
+                 @close="onTestClose" @success="onTestClose" @fail="onTestClose"/>
 
     <hr />
     <button @click="onTest">验证</button>
@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       imgs: [Img1],
-      show: true
+      show: false
     };
   },
   components: {
