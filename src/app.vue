@@ -260,14 +260,8 @@ export default {
       ctx2.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
       // 取一个随机坐标，作为拼图块的位置
-      this.pinX = this.getRandom(
-        this.puzzleBaseSize,
-        this.canvasWidth - this.puzzleBaseSize - 20
-      ); // 留20的边距
-      this.pinY = this.getRandom(
-        20,
-        this.canvasHeight - this.puzzleBaseSize - 20
-      ); // 主图高度 - 拼图块自身高度 - 20边距
+      this.pinX = this.getRandom(this.puzzleBaseSize,this.canvasWidth - this.puzzleBaseSize - 20); // 留20的边距
+      this.pinY = this.getRandom(20,this.canvasHeight - this.puzzleBaseSize - 20); // 主图高度 - 拼图块自身高度 - 20边距
       img.crossOrigin = "anonymous"; // 匿名，想要获取跨域的图片
       img.onload = () => {
         const [x, y, w, h] = this.makeImgSize(img);
@@ -366,7 +360,6 @@ export default {
         // 画整体背景图
         ctx.save();
         ctx.globalCompositeOperation = "destination-over";
-        // ctx.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
         ctx.drawImage(img, x, y, w, h);
         ctx.restore();
 
