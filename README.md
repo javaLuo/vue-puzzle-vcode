@@ -44,7 +44,7 @@ import Vcode from "vue-puzzle-vcode";
 <template>
   <div>
     <Vcode :show="isShow" @success="success" @close="close" />
-    <button @click="submit">登录</button>
+    <button @click="submit">开始验证</button>
   </div>
 </template>
 
@@ -65,7 +65,7 @@ export default {
     },
     // 用户通过了验证
     success(msg) {
-      this.isShow = false; // 通过验证后，需要手动隐藏模态框
+      this.isShow = false; // 通过验证后，需要手动关闭模态框
     },
     // 用户点击遮罩层，应该关闭模态框
     close() {
@@ -129,6 +129,51 @@ export default {
 - 当不传递 imgs 字段或图片加载出错时，会自动生成随机图片
 - 模态框的显示和隐藏完全由父级控制，所以用户通过验证后，需要手动隐藏模态框
 
-### 更新日志
+## 使用 Vue3.0
 
-**1.1.5 2021/02/09** 把所有package包更新到最新，减小代码体积。 （目前不支持vue3.0, 会报错， 等vue3.0正式发布时再改）
+### 安装 vue3-puzzle-vcode
+```node
+  npm install vue3-puzzle-vcode --save
+```
+
+### 最简单例子
+```vue
+<template>
+    <button @click="onShow">开始验证</button>
+    <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
+</template>
+
+<script>
+import { ref } from "vue";
+import Vcode from "vue3-puzzle-vcode";
+export default {
+  components:{
+    Vcode
+  },
+  setup() {
+    const isShow = ref(false);
+
+    const onShow = () => {
+      isShow.value = true;
+    };
+
+    const onClose = () => {
+      isShow.value = false;
+    };
+
+    const onSuccess = () => {
+      onClose(); // 验证成功，需要手动关闭模态框
+    };
+
+    return {
+      isShow,
+      onShow,
+      onClose,
+      onSuccess
+    };
+  }
+};
+</script>
+```
+
+- 其他都更vue2.0一样
