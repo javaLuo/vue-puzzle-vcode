@@ -188,7 +188,10 @@ export default {
 };
 </script>
 ```
-- 其他参数/事件都更vue2.0一样
+- 其他参数/事件都跟vue2.0一样
+
+### Vue3.0源代码
+<a href="https://github.com/javaLuo/vue-puzzle-vcode/tree/vue3" target="_blank">https://github.com/javaLuo/vue-puzzle-vcode/tree/vue3</a>
 
 ### 说明
 
