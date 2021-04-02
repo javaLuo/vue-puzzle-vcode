@@ -7,15 +7,6 @@ Vue 纯前端的拼图人机验证、右滑拼图验证<br/> 我知道有第 3 �
 
 ![img](public/demo.gif)
 
-## 重要更新
-
-2020/03/16 v1.1.0 **事件名改变** <br/>
-
-```
-@onSuccess -> @success
-@onClose -> @close
-@onFail -> @fail
-```
 
 ### 安装
 
@@ -28,7 +19,7 @@ Vue 纯前端的拼图人机验证、右滑拼图验证<br/> 我知道有第 3 �
 ```vue
 import Vcode from "vue-puzzle-vcode";
 
-<Vcode :show="isShow" @success="success" @close="close" />
+<Vcode :show="isShow" @success="onSuccess" @close="onClose" />
 ```
 
 ### IE
@@ -38,12 +29,12 @@ import Vcode from "vue-puzzle-vcode";
 到自己的项目里，给`app.vue`随便改个名字，就是个普通 vue 组件，直接用即可。<br/>
 `src/assets`里是一张小图片，`app.vue`中有引用，注意自己匹配一下引用路径
 
-### 最简单例子
+### Vue2.0 最简单例子
 
 ```vue
 <template>
   <div>
-    <Vcode :show="isShow" @success="success" @close="close" />
+    <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
     <button @click="submit">开始验证</button>
   </div>
 </template>
@@ -53,7 +44,7 @@ import Vcode from "vue-puzzle-vcode";
 export default {
   data() {
     return {
-      isShow: false, // 验证码模态框是否出现
+      isShow: false,
     };
   },
   components: {
@@ -63,12 +54,12 @@ export default {
     submit() {
       this.isShow = true;
     },
-    // 用户通过了验证
-    success(msg) {
+
+    onSuccess(msg) {
       this.isShow = false; // 通过验证后，需要手动关闭模态框
     },
-    // 用户点击遮罩层，应该关闭模态框
-    close() {
+
+    onClose() {
       this.isShow = false;
     },
   },
@@ -124,19 +115,19 @@ export default {
 - 也可以是网络图片完整 URL 路径，但注意图片跨域问题，因为 canvas api 无法调用跨
   域的图片
 
-### 说明
 
-- 当不传递 imgs 字段或图片加载出错时，会自动生成随机图片
-- 模态框的显示和隐藏完全由父级控制，所以用户通过验证后，需要手动隐藏模态框
+<br/><br/>
+---
 
-## 使用 Vue3.0
+# 使用 Vue3.0
+<br/>
 
 ### 安装 vue3-puzzle-vcode
 ```node
   npm install vue3-puzzle-vcode --save
 ```
 
-### 最简单例子
+### Vue3.0 最简单例子
 ```vue
 <template>
     <button @click="onShow">开始验证</button>
@@ -176,4 +167,30 @@ export default {
 </script>
 ```
 
-- 其他都更vue2.0一样
+### Vue3.0 自定义图片
+```vue
+<template>
+  <Vcode :imgs="imgs" />
+</template>
+
+<script>
+import Img1 from "~/assets/img1.png";
+import Img2 from "~/assets/img2.png";
+
+export default {
+  setup(){
+    const imgs = [Img1, Img2];
+
+    return {
+      imgs
+    }
+  }
+};
+</script>
+```
+- 其他参数/事件都更vue2.0一样
+
+### 说明
+
+- 当不传递 imgs 字段或图片加载出错时，会自动生成随机图片
+- 模态框的显示和隐藏完全由父级控制，所以用户通过验证后，需要手动隐藏模态框
