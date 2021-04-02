@@ -82,10 +82,10 @@
   </teleport>
 </template>
 <script>
-import { ref, reactive, onMounted, onUnmounted, computed } from "vue";
+import { ref, reactive, onMounted, onUnmounted, computed, watch, toRefs } from "vue";
 export default {
+  emits: ['success', 'fail', 'close'],
   props: {
-    id: { type: String },
     canvasWidth: { type: Number, default: 310 }, // 主canvas的宽
     canvasHeight: { type: Number, default: 160 }, // 主canvas的高
     show: { type: Boolean, default: false }, // 是否出现，由父级控制
@@ -160,7 +160,7 @@ export default {
     });
 
     // 每次出现都应该重新初始化
-    watch(state.show,(newV)=>{
+    watch(() => props.show,(newV)=>{
       if (newV) {
         document.body.classList.add("vue-puzzle-overflow");
         reset();
@@ -172,17 +172,17 @@ export default {
     // styleWidth是底部用户操作的滑块的父级，就是轨道在鼠标的作用下应该具有的宽度
     const styleWidth = computed(()=>{
       const w = state.startWidth + state.newX - state.startX;
-      return w < state.sliderBaseSize
-        ? state.sliderBaseSize
-        : w > state.canvasWidth
-        ? state.canvasWidth
+      return w < sliderBaseSize.value
+        ? sliderBaseSize.value
+        : w > props.canvasWidth
+        ? props.canvasWidth
         : w;
     });
 
     // 图中拼图块的60 * 用户设定的缩放比例计算之后的值 0.2~2
     const puzzleBaseSize = computed(()=>{
       return Math.round(
-        Math.max(Math.min(state.puzzleScale, 2), 0.2) * 52.5 + 6
+        Math.max(Math.min(props.puzzleScale, 2), 0.2) * 52.5 + 6
       );
     });
 
@@ -190,15 +190,15 @@ export default {
     const sliderBaseSize = computed(()=>{
       return Math.max(
         Math.min(
-          Math.round(state.sliderSize),
-          Math.round(state.canvasWidth * 0.5)
+          Math.round(props.sliderSize),
+          Math.round(props.canvasWidth * 0.5)
         ),
         10
       );
     });
 
     // 私有-关闭
-    const onClose = () => {
+    const onC = () => {
       if (!state.mouseDown) {
         clearTimeout(state.timer1);
         context.emit("close");
@@ -211,7 +211,7 @@ export default {
 
     const onCloseMouseUp = () => {
       if (state.closeDown) {
-        onClose();
+        onC();
       }
       state.closeDown = false;
     };
@@ -220,7 +220,7 @@ export default {
     const onRangeMouseDown = (e) => {
       if (state.isCanSlide) {
         state.mouseDown = true;
-        state.startWidth = rangeSlider.clientWidth;
+        state.startWidth = rangeSlider.value.clientWidth;
         state.newX = e.clientX || e.changedTouches[0].clientX;
         state.startX = e.clientX || e.changedTouches[0].clientX;
       }
@@ -249,19 +249,18 @@ export default {
     const init = (withCanvas) => {
       state.loading = true;
       state.isCanSlide = false;
-      const c = canvas1;
-      const c2 = canvas2;
-      const c3 = canvas3;
+      const c = canvas1.value;
+      const c2 = canvas2.value;
+      const c3 = canvas3.value;
       const ctx = c.getContext("2d");
       const ctx2 = c2.getContext("2d");
       const ctx3 = c3.getContext("2d");
       const img = document.createElement("img");
-      ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
-      ctx2.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
-
+      ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
+      ctx2.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
       // 取一个随机坐标，作为拼图块的位置
-      state.pinX = getRandom(state.puzzleBaseSize,state.canvasWidth - state.puzzleBaseSize - 20); // 留20的边距
-      state.pinY = getRandom(20,state.canvasHeight - state.puzzleBaseSize - 20); // 主图高度 - 拼图块自身高度 - 20边距
+      state.pinX = getRandom(puzzleBaseSize.value + 20,props.canvasWidth - puzzleBaseSize.value - 10); // 留10的边距
+      state.pinY = getRandom(20,props.canvasHeight - puzzleBaseSize.value - 10); // 主图高度 - 拼图块自身高度 - 10边距
       img.crossOrigin = "anonymous"; // 匿名，想要获取跨域的图片
       img.onload = () => {
         const [x, y, w, h] = makeImgSize(img);
@@ -302,9 +301,9 @@ export default {
         paintBrick(ctx);
 
         ctx.arc(
-          state.pinX + Math.ceil(state.puzzleBaseSize / 2),
-          state.pinY + Math.ceil(state.puzzleBaseSize / 2),
-          state.puzzleBaseSize * 1.2,
+          state.pinX + Math.ceil(puzzleBaseSize.value / 2),
+          state.pinY + Math.ceil(puzzleBaseSize.value / 2),
+          puzzleBaseSize.value * 1.2,
           0,
           Math.PI * 2,
           true
@@ -313,22 +312,21 @@ export default {
         ctx.shadowColor = "rgba(255, 255, 255, .8)";
         ctx.shadowOffsetX = -1;
         ctx.shadowOffsetY = -1;
-        ctx.shadowBlur = Math.min(Math.ceil(8 * state.puzzleScale), 12);
+        ctx.shadowBlur = Math.min(Math.ceil(8 * props.puzzleScale), 12);
         ctx.fillStyle = "#ffffaa";
         ctx.fill();
-
         // 将小图赋值给ctx2
         const imgData = ctx.getImageData(
           state.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
           state.pinY - 20,
-          state.pinX + state.puzzleBaseSize + 5,
-          state.pinY + state.puzzleBaseSize + 5
+          state.pinX + puzzleBaseSize.value + 5,
+          state.pinY + puzzleBaseSize.value + 5
         );
         ctx2.putImageData(imgData, 0, state.pinY - 20);
 
         // 清理
         ctx.restore();
-        ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+        ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
 
         // 画缺口
         ctx.save();
@@ -337,15 +335,14 @@ export default {
         ctx.fillStyle = "#ffffff";
         ctx.fill();
         ctx.restore();
-
         // 画缺口的内阴影
         ctx.save();
         ctx.globalCompositeOperation = "source-atop";
         paintBrick(ctx);
         ctx.arc(
-          state.pinX + Math.ceil(state.puzzleBaseSize / 2),
-          state.pinY + Math.ceil(state.puzzleBaseSize / 2),
-          state.puzzleBaseSize * 1.2,
+          state.pinX + Math.ceil(puzzleBaseSize.value / 2),
+          state.pinY + Math.ceil(puzzleBaseSize.value / 2),
+          puzzleBaseSize.value * 1.2,
           0,
           Math.PI * 2,
           true
@@ -362,7 +359,6 @@ export default {
         ctx.globalCompositeOperation = "destination-over";
         ctx.drawImage(img, x, y, w, h);
         ctx.restore();
-
         state.loading = false;
         state.isCanSlide = true;
       };
@@ -370,17 +366,17 @@ export default {
         init(true); // 如果图片加载错误就重新来，并强制用canvas随机作图
       };
 
-      if (!withCanvas && state.imgs && state.imgs.length) {
-        let randomNum = getRandom(0, state.imgs.length - 1);
+      if (!withCanvas && props.imgs && props.imgs.length) {
+        let randomNum = getRandom(0, props.imgs.length - 1);
         if (randomNum === state.imgIndex) {
-          if (randomNum === state.imgs.length - 1) {
+          if (randomNum === props.imgs.length - 1) {
             randomNum = 0;
           } else {
             randomNum++;
           }
         }
         state.imgIndex = randomNum;
-        img.src = state.imgs[randomNum];
+        img.src = props.imgs[randomNum];
       } else {
         img.src = makeImgWithCanvas();
       }
@@ -394,28 +390,28 @@ export default {
     // 工具 - 设置图片尺寸cover方式贴合canvas尺寸 w/h
     const makeImgSize = (img) => {
       const imgScale = img.width / img.height;
-      const canvasScale = state.canvasWidth / state.canvasHeight;
+      const canvasScale = props.canvasWidth / props.canvasHeight;
       let x = 0,
         y = 0,
         w = 0,
         h = 0;
       if (imgScale > canvasScale) {
-        h = state.canvasHeight;
+        h = props.canvasHeight;
         w = imgScale * h;
         y = 0;
-        x = (state.canvasWidth - w) / 2;
+        x = (props.canvasWidth - w) / 2;
       } else {
-        w = state.canvasWidth;
+        w = props.canvasWidth;
         h = w / imgScale;
         x = 0;
-        y = (state.canvasHeight - h) / 2;
+        y = (props.canvasHeight - h) / 2;
       }
       return [x, y, w, h];
-    },
+    };
 
     // 私有-绘制拼图块的路径
     const paintBrick = (ctx) => {
-      const moveL = Math.ceil(15 * state.puzzleScale); // 直线移动的基础距离
+      const moveL = Math.ceil(15 * props.puzzleScale); // 直线移动的基础距离
       ctx.beginPath();
       ctx.moveTo(state.pinX, state.pinY);
       ctx.lineTo(state.pinX + moveL, state.pinY);
@@ -477,13 +473,13 @@ export default {
     const makeImgWithCanvas = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      canvas.width = state.canvasWidth;
-      canvas.height = state.canvasHeight;
+      canvas.width = props.canvasWidth;
+      canvas.height = props.canvasHeight;
       ctx.fillStyle = `rgb(${getRandom(100, 255)},${getRandom(
         100,
         255
       )},${getRandom(100, 255)})`;
-      ctx.fillRect(0, 0, state.canvasWidth, state.canvasHeight);
+      ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight);
       // 随机画10个图形
       for (let i = 0; i < 12; i++) {
         ctx.fillStyle = `rgb(${getRandom(100, 255)},${getRandom(
@@ -530,15 +526,15 @@ export default {
       // 最后+ 的是补上slider和滑块宽度不一致造成的缝隙
       const x = Math.abs(
         state.pinX -
-          (state.styleWidth - state.sliderBaseSize) +
-          (state.puzzleBaseSize - state.sliderBaseSize) *
-            ((state.styleWidth - state.sliderBaseSize) /
-              (state.canvasWidth - state.sliderBaseSize)) -
+          (styleWidth.value - sliderBaseSize.value) +
+          (puzzleBaseSize.value - sliderBaseSize.value) *
+            ((styleWidth.value - sliderBaseSize.value) /
+              (props.canvasWidth - sliderBaseSize.value)) -
           3
       );
-      if (x < state.range) {
+      if (x < props.range) {
         // 成功
-        state.infoText = state.successText;
+        state.infoText = props.successText;
         state.infoBoxFail = false;
         state.infoBoxShow = true;
         state.isCanSlide = false;
@@ -551,12 +547,11 @@ export default {
         }, 800);
       } else {
         // 失败
-        state.infoText = state.failText;
+        state.infoText = props.failText;
         state.infoBoxFail = true;
         state.infoBoxShow = true;
         state.isCanSlide = false;
-        // 失败的回调
-        context.$emit("fail", x);
+        context.emit("fail", x);
         // 800ms后重置
         clearTimeout(state.timer1);
         state.timer1 = setTimeout(() => {
@@ -571,7 +566,7 @@ export default {
       state.infoBoxShow = false;
       state.isCanSlide = true;
       state.isSuccess = false;
-      state.startWidth = state.sliderBaseSize; // 鼠标点下去时父级的width
+      state.startWidth = sliderBaseSize.value; // 鼠标点下去时父级的width
       state.startX = 0; // 鼠标按下时的X
       state.newX = 0; // 鼠标当前的偏移X
       init();
@@ -591,7 +586,7 @@ export default {
       onRangeMouseDown,
       onRangeMouseMove,
       reset,
-      ...state
+      ...toRefs(state)
     }
   }
 };
