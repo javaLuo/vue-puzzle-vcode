@@ -1355,6 +1355,17 @@
     estree-walker "^2.0.1"
     source-map "^0.6.1"
 
+"@vue/compiler-core@3.0.11":
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.0.11.tgz#5ef579e46d7b336b8735228758d1c2c505aae69a"
+  integrity sha512-6sFj6TBac1y2cWCvYCA8YzHJEbsVkX7zdRs/3yK/n1ilvRqcn983XvpBbnN3v4mZ1UiQycTvOiajJmOgN9EVgw==
+  dependencies:
+    "@babel/parser" "^7.12.0"
+    "@babel/types" "^7.12.0"
+    "@vue/shared" "3.0.11"
+    estree-walker "^2.0.1"
+    source-map "^0.6.1"
+
 "@vue/compiler-dom@3.0.10":
   version "3.0.10"
   resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.0.10.tgz#59d3597498e7d4b0b92f3886a823f99d5b08f1fe"
@@ -1363,17 +1374,25 @@
     "@vue/compiler-core" "3.0.10"
     "@vue/shared" "3.0.10"
 
+"@vue/compiler-dom@3.0.11":
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.0.11.tgz#b15fc1c909371fd671746020ba55b5dab4a730ee"
+  integrity sha512-+3xB50uGeY5Fv9eMKVJs2WSRULfgwaTJsy23OIltKgMrynnIj8hTYY2UL97HCoz78aDw1VDXdrBQ4qepWjnQcw==
+  dependencies:
+    "@vue/compiler-core" "3.0.11"
+    "@vue/shared" "3.0.11"
+
 "@vue/compiler-sfc@^3.0.0":
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.10.tgz#de6bc9be7f5ab1d944048a9be04c72c3571d4321"
-  integrity sha512-LLbXHwKMM72aomKsj9AySkLP1xIHREh/3w0nueenKhsWuaKTL1/XUhIPml23+Z+tX55qeJiUIHDeJuFSxfgQfg==
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.11.tgz#cd8ca2154b88967b521f5ad3b10f5f8b6b665679"
+  integrity sha512-7fNiZuCecRleiyVGUWNa6pn8fB2fnuJU+3AGjbjl7r1P5wBivfl02H4pG+2aJP5gh2u+0wXov1W38tfWOphsXw==
   dependencies:
     "@babel/parser" "^7.13.9"
     "@babel/types" "^7.13.0"
-    "@vue/compiler-core" "3.0.10"
-    "@vue/compiler-dom" "3.0.10"
-    "@vue/compiler-ssr" "3.0.10"
-    "@vue/shared" "3.0.10"
+    "@vue/compiler-core" "3.0.11"
+    "@vue/compiler-dom" "3.0.11"
+    "@vue/compiler-ssr" "3.0.11"
+    "@vue/shared" "3.0.11"
     consolidate "^0.16.0"
     estree-walker "^2.0.1"
     hash-sum "^2.0.0"
@@ -1385,13 +1404,13 @@
     postcss-selector-parser "^6.0.4"
     source-map "^0.6.1"
 
-"@vue/compiler-ssr@3.0.10":
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/@vue/compiler-ssr/-/compiler-ssr-3.0.10.tgz#6ccc647bda49c0fc1ca100219e9c71268e048120"
-  integrity sha512-skrPSp9pjZG3unqHpUaEaRRpO1yYxbCXRfJ1kZW8PTGAg5g3Y/hrUet5+Q6zCIZwr5j1mSMBSLXMDCjFuyyZLg==
+"@vue/compiler-ssr@3.0.11":
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-ssr/-/compiler-ssr-3.0.11.tgz#ac5a05fd1257412fa66079c823d8203b6a889a13"
+  integrity sha512-66yUGI8SGOpNvOcrQybRIhl2M03PJ+OrDPm78i7tvVln86MHTKhM3ERbALK26F7tXl0RkjX4sZpucCpiKs3MnA==
   dependencies:
-    "@vue/compiler-dom" "3.0.10"
-    "@vue/shared" "3.0.10"
+    "@vue/compiler-dom" "3.0.11"
+    "@vue/shared" "3.0.11"
 
 "@vue/component-compiler-utils@^3.1.0", "@vue/component-compiler-utils@^3.1.2":
   version "3.2.0"
@@ -1449,6 +1468,11 @@
   version "3.0.10"
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.10.tgz#5476d5615d01bf339c65c2e804f5909bbc27844a"
   integrity sha512-p8GJ+bGpEGiEHICwcCH/EtJnkZQllrOfm1J2J+Ep0ydMte25bPnArgrY/h2Tn1LKqqR3LXyQlOSYY6gJgiW2LQ==
+
+"@vue/shared@3.0.11":
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.11.tgz#20d22dd0da7d358bb21c17f9bde8628152642c77"
+  integrity sha512-b+zB8A2so8eCE0JsxjL24J7vdGl8rzPQ09hZNhystm+KqSbKcAej1A+Hbva1rCMmTTqA+hFnUSDc5kouEo0JzA==
 
 "@vue/web-component-wrapper@^1.2.0":
   version "1.3.0"
@@ -3513,9 +3537,9 @@ eslint-plugin-prettier@^3.3.1:
     prettier-linter-helpers "^1.0.0"
 
 eslint-plugin-vue@^7.0.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-7.8.0.tgz#cb0e85d65b65fa8d15e783fbb03c049d2c4cfdae"
-  integrity sha512-OGrnPz+PuYL2HmVyBHxm4mRjxW2kfFCQE6Hw9G6qOHs/Pcu0srOlCCW0FMa8SLzIEqxl8WuKoBSPcMnrjUG2vw==
+  version "7.9.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-7.9.0.tgz#f8e83a2a908f4c43fc8304f5401d4ff671f3d560"
+  integrity sha512-2Q0qQp5+5h+pZvJKCbG1/jCRUYrdgAz5BYKGyTlp2NU8mx09u3Hp7PsH6d5qef6ojuPoCXMnrbbDxeoplihrSw==
   dependencies:
     eslint-utils "^2.1.0"
     natural-compare "^1.4.0"
