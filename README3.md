@@ -1,72 +1,62 @@
-# vue-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue-puzzle-vcode.svg)](https://www.npmjs.com/package/vue-puzzle-vcode) [![npm downloads](https://img.shields.io/npm/dt/vue-puzzle-vcode.svg)](https://www.npmjs.com/package/vue-puzzle-vcode)
+# vue3-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode) [![npm downloads](https://img.shields.io/npm/dt/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode)
 
-Vue 纯前端的拼图人机验证、右滑拼图验证<br/> 我知道有第 3 方的很好用,比如 GEETEST
-的拼图验证，但要引入 SDK 跟后台配合，还有接口交互。<br/> 太麻烦了，有时候突然改需求来不及弄，为了应付老板，就弄了个纯前端的随便验一下得了。
+以下是在Vue3.0中使用的文档
 
 **DEMO**: https://isluo.com/work/vue-puzzle-vcode/
 
 ![img](public/demo.gif)
 
 
-> 以下为Vue2.x使用文档
-> [Vue3.x的使用文档在这](README3.md)
-
-
-### 安装
+### Vue3.x 安装 vue3-puzzle-vcode
 
 ```node
-  npm install vue-puzzle-vcode --save
+  npm install vue3-puzzle-vcode --save
 ```
 
 ### 使用
 
 ```vue
-import Vcode from "vue-puzzle-vcode";
+import Vcode from "vue3-puzzle-vcode";
 
 <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
 ```
 
-### IE
-
-我没加`babel-polyfill`,所以在 IE 里会报错：`SCRIPT1002: 语法错误`（IE 不支持箭头
-函数）<br/> 需要兼容 IE 的朋友，请直接复制`src/app.vue`和`src/assets`这两个东西
-到自己的项目里，给`app.vue`随便改个名字，就是个普通 vue 组件，直接用即可。<br/>
-`src/assets`里是一张小图片，`app.vue`中有引用，注意自己匹配一下引用路径
-
 ### 最简单例子
-
 ```vue
 <template>
-  <div>
+    <button @click="onShow">开始验证</button>
     <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
-    <button @click="submit">开始验证</button>
-  </div>
 </template>
 
 <script>
-import Vcode from "vue-puzzle-vcode";
+import { ref } from "vue";
+import Vcode from "vue3-puzzle-vcode";
 export default {
-  data() {
-    return {
-      isShow: false,
+  components:{
+    Vcode
+  },
+  setup() {
+    const isShow = ref(false);
+
+    const onShow = () => {
+      isShow.value = true;
     };
-  },
-  components: {
-    Vcode,
-  },
-  methods: {
-    submit() {
-      this.isShow = true;
-    },
 
-    onSuccess(msg) {
-      this.isShow = false; // 通过验证后，需要手动关闭模态框
-    },
+    const onClose = () => {
+      isShow.value = false;
+    };
 
-    onClose() {
-      this.isShow = false;
-    },
-  },
+    const onSuccess = () => {
+      onClose(); // 验证成功，需要手动关闭模态框
+    };
+
+    return {
+      isShow,
+      onShow,
+      onClose,
+      onSuccess
+    };
+  }
 };
 </script>
 ```
@@ -94,11 +84,11 @@ export default {
 | fail    | 偏差值 | 验证失败时会触发，返回值同上                                  |
 | close   | null   | 用户点击遮罩层的回调                                          |
 
-### 自定义图片
 
+### 自定义图片
 ```vue
 <template>
-  <Vcode :imgs="[Img1, Img2]" />
+  <Vcode :imgs="imgs" />
 </template>
 
 <script>
@@ -106,19 +96,16 @@ import Img1 from "~/assets/img1.png";
 import Img2 from "~/assets/img2.png";
 
 export default {
-  data() {
+  setup(){
+    const imgs = [Img1, Img2];
+
     return {
-      Img1,
-      Img2,
-    };
-  },
+      imgs
+    }
+  }
 };
 </script>
 ```
-
-- 也可以是网络图片完整 URL 路径，但注意图片跨域问题，因为 canvas api 无法调用跨
-  域的图片
-
 
 ### 说明
 
