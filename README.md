@@ -8,7 +8,7 @@ Vue 纯前端的拼图人机验证、右滑拼图验证<br/> 我知道有第 3 �
 ![img](public/demo.gif)
 
 
-> 以下为Vue2.x使用文档
+> 以下为Vue2.x使用文档<br/>
 > [Vue3.x的使用文档在这](README3.md)
 
 
