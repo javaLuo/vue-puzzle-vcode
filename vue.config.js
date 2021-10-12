@@ -19,7 +19,6 @@ module.exports = {
       //     },
       //   },
       // };
-      console.log("what is config", config);
     }
   },
 };

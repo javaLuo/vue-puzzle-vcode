@@ -1,6 +1,60 @@
-# vue3-puzzle-vcode
+# vue3-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode) [![npm downloads](https://img.shields.io/npm/dt/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode)
 
-这个分支是vue3-puzzle-vcode的源代码，
-<br/>可以直接复制`src/app.vue`和`src/assets`这两个东西到自己的项目里直接使用,
-<br/>`src/app.vue`就是个普通vue3.0组件，
-<br/>`src/assets`中是一张要用到的图片，请注意自己匹配一下图片的引用路径
+**DEMO**: https://isluo.com/work/vue-puzzle-vcode/
+
+![img](public/demo.gif)
+
+### 安装
+```node
+  npm install vue3-puzzle-vcode --save
+```
+
+### 最简单例子
+```vue
+<template>
+    <Vcode :show="isShow" @success="onSuccess" @close="onClose"/>
+    <button @click="onShow">开始验证</button>
+</template>
+
+<script setup>
+  import { ref } from "vue";
+  import Vcode from "vue3-puzzle-vcode";
+
+  const isShow = ref(false);
+
+  const onShow = () => {
+    isShow.value = true;
+  };
+
+  const onClose = () => {
+    isShow.value = false;
+  };
+
+  const onSuccess = () => {
+    onClose(); // 验证成功，手动关闭模态框
+  };
+</script>
+```
+
+### 参数
+
+| 字段         | 类型    | 默认值             | 说明                                                                          |
+| ------------ | ------- | ------------------ | ----------------------------------------------------------------------------- |
+| show         | Boolean | false              | 是否显示验证码弹框                                                            |
+| canvasWidth  | Number  | 310                | 主图区域的宽度，单位 px                                                       |
+| canvasHeight | Number  | 160                | 主图区域的高度，单位 px                                                       |
+| puzzleScale  | Number  | 1                  | 拼图块(小的拼图)的大小比例，0.2 ～ 2 ，数字越大，拼图越大                     |
+| sliderSize   | Number  | 50                 | 左下角用户拖动的那个滑块的尺寸，单位 px                                       |
+| range        | Number  | 10                 | 判断成功的误差范围，单位 px, 滑动的距离和拼图的距离小于等于此值时，会判定重合 |
+| imgs         | Array   | null               | 自定义图片，见下方例子                                                        |
+| successText  | String  | "验证通过！"       | 验证成功时的提示文字                                                          |
+| failText     | String  | "验证失败，请重试" | 验证失败时的提示文字                                                          |
+| sliderText   | String  | "拖动滑块完成拼图" | 下方滑动条里的文字                                                            |
+
+### 事件
+
+| 事件名  | 返回值 | 说明                                                          |
+| ------- | ------ | ------------------------------------------------------------- |
+| success | 偏差值 | 验证通过时会触发，返回值是用户移动的距离跟目标距离的偏差值 px |
+| fail    | 偏差值 | 验证失败时会触发，返回值同上                                  |
+| close   | null   | 用户点击遮罩层的回调                                          |
