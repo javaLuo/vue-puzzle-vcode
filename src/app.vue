@@ -18,7 +18,7 @@
 
 <script>
 import {ref} from 'vue';
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus';
 import Vcode from "vue3-puzzle-vcode";
 import Img1 from "./assets/1.png";
 import Img2 from "./assets/2.png";

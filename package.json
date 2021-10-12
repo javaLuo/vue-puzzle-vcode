@@ -12,7 +12,7 @@
     "element-plus": "^1.0.2-beta.36",
     "register-service-worker": "^1.7.1",
     "vue": "^3.0.0",
-    "vue3-puzzle-vcode": "^1.0.0"
+    "vue3-puzzle-vcode": "1.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -28,7 +28,9 @@
     "eslint-plugin-vue": "^7.0.0",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "unplugin-element-plus": "^0.1.0",
+    "unplugin-vue-components": "^0.15.6"
   },
   "eslintConfig": {
     "root": true,
