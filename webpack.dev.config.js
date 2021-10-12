@@ -47,7 +47,9 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: path.join(__dirname, "example"),
+    static: {
+      directory: path.join(__dirname, 'example'),
+    },
     hot: true,
     open: true,
   },

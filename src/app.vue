@@ -1,7 +1,6 @@
 <template>
   <!-- 本体部分 -->
-  <div :id="id"
-       :class="['vue-puzzle-vcode', { show_: show }]"
+  <div :class="['vue-puzzle-vcode', { show_: show }]"
        @mousedown="onCloseMouseDown"
        @mouseup="onCloseMouseUp"
        @touchstart="onCloseMouseDown"
@@ -82,31 +81,7 @@
 <script>
 import resetSvg from "./assets/reset.png";
 export default {
-  /** 私有数据 **/
-  data() {
-    return {
-      mouseDown: false, // 鼠标是否在按钮上按下
-      startWidth: 50, // 鼠标点下去时父级的width
-      startX: 0, // 鼠标按下时的X
-      newX: 0, // 鼠标当前的偏移X
-      pinX: 0, // 拼图的起始X
-      pinY: 0, // 拼图的起始Y
-      loading: true, // 是否正在加在中，主要是等图片onload
-      isCanSlide: false, // 是否可以拉动滑动条
-      error: false, // 图片加在失败会出现这个，提示用户手动刷新
-      infoBoxShow: false, // 提示信息是否出现
-      infoText: "", // 提示等信息
-      infoBoxFail: false, // 是否验证失败
-      timer1: null, // setTimout1
-      closeDown: false, // 为了解决Mac上的click BUG
-      isSuccess: false, // 验证成功
-      resetSvg,
-      imgIndex: -1 // 用于自定义图片时不会随机到重复的图片
-    };
-  },
-  /** 父级参数 **/
   props: {
-    id: { type: String },
     canvasWidth: { type: Number, default: 310 }, // 主canvas的宽
     canvasHeight: { type: Number, default: 160 }, // 主canvas的高
     // 是否出现，由父级控制
@@ -132,6 +107,29 @@ export default {
     }
   },
 
+  data() {
+    return {
+      mouseDown: false, // 鼠标是否在按钮上按下
+      startWidth: 50, // 鼠标点下去时父级的width
+      startX: 0, // 鼠标按下时的X
+      newX: 0, // 鼠标当前的偏移X
+      pinX: 0, // 拼图的起始X
+      pinY: 0, // 拼图的起始Y
+      loading: false, // 是否正在加在中，主要是等图片onload
+      isCanSlide: false, // 是否可以拉动滑动条
+      error: false, // 图片加在失败会出现这个，提示用户手动刷新
+      infoBoxShow: false, // 提示信息是否出现
+      infoText: "", // 提示等信息
+      infoBoxFail: false, // 是否验证失败
+      timer1: null, // setTimout1
+      closeDown: false, // 为了解决Mac上的click BUG
+      isSuccess: false, // 验证成功
+      imgIndex: -1, // 用于自定义图片时不会随机到重复的图片
+      isSubmting: false, // 是否正在判定，主要用于判定中不能点击重置按钮
+      resetSvg,
+    };
+  },
+
   /** 生命周期 **/
   mounted() {
     document.body.appendChild(this.$el);
@@ -144,8 +142,9 @@ export default {
     document.addEventListener("touchend", this.onRangeMouseUp, false);
     if (this.show) {
       document.body.classList.add("vue-puzzle-overflow");
+      this.reset();
     }
-    this.reset();
+
   },
   beforeDestroy() {
     clearTimeout(this.timer1);
@@ -167,6 +166,8 @@ export default {
         document.body.classList.add("vue-puzzle-overflow");
         this.reset();
       } else {
+        this.isSuccess = false;
+        this.infoBoxShow = false;
         document.body.classList.remove("vue-puzzle-overflow");
       }
     }
@@ -247,6 +248,10 @@ export default {
      * @param withCanvas 是否强制使用canvas随机作图
      */
     init(withCanvas) {
+      // 防止重复加载导致的渲染错误
+      if(this.loading && !withCanvas){
+        return;
+      }
       this.loading = true;
       this.isCanSlide = false;
       const c = this.$refs.canvas1;
@@ -255,7 +260,10 @@ export default {
       const ctx = c.getContext("2d");
       const ctx2 = c2.getContext("2d");
       const ctx3 = c3.getContext("2d");
+      const isFirefox = navigator.userAgent.indexOf("Firefox") >= 0 && navigator.userAgent.indexOf("Windows") >= 0; // 是windows版火狐
       const img = document.createElement("img");
+      ctx.fillStyle = "rgba(255,255,255,1)";
+      ctx3.fillStyle = "rgba(255,255,255,1)";
       ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
       ctx2.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
@@ -269,31 +277,26 @@ export default {
         // 先画小图
         this.paintBrick(ctx);
         ctx.closePath();
-        if (
-          !(
-            navigator.userAgent.indexOf("Firefox") >= 0 &&
-            navigator.userAgent.indexOf("Windows") >= 0
-          )
-        ) {
-          // 非火狐，在此画外阴影
+        if(!isFirefox){
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
           ctx.shadowColor = "#000";
           ctx.shadowBlur = 3;
           ctx.fill();
+          ctx.clip();
+        } else {
+          ctx.clip();
+          ctx.save();
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.shadowColor = "#000";
+          ctx.shadowBlur = 3;
+          ctx.fill();
+          ctx.restore();
         }
 
-        ctx.clip(); // 按照外阴影区域切割
-
-        ctx.save();
-        // 小图外阴影
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.shadowColor = "#000";
-        ctx.shadowBlur = 2;
-        ctx.fill();
-        ctx.restore();
         ctx.drawImage(img, x, y, w, h);
+        ctx3.fillRect(0,0,this.canvasWidth,this.canvasHeight);
         ctx3.drawImage(img, x, y, w, h);
 
         // 设置小图的内阴影
@@ -318,13 +321,8 @@ export default {
         ctx.fill();
 
         // 将小图赋值给ctx2
-        const imgData = ctx.getImageData(
-          this.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
-          this.pinY - 20,
-          this.pinX + this.puzzleBaseSize + 5,
-          this.pinY + this.puzzleBaseSize + 5
-        );
-        ctx2.putImageData(imgData, 0, this.pinY - 20);
+        ctx2.drawImage(c, this.pinX - 3,this.pinY - 20,this.pinX + this.puzzleBaseSize + 5,this.pinY + this.puzzleBaseSize + 5, 
+        0, this.pinY - 20, this.pinX + this.puzzleBaseSize + 5, this.pinY + this.puzzleBaseSize + 5);
 
         // 清理
         ctx.restore();
@@ -521,6 +519,7 @@ export default {
     },
     // 开始判定
     submit() {
+      this.isSubmting = true;
       // 偏差 x = puzzle的起始X - (用户真滑动的距离) + (puzzle的宽度 - 滑块的宽度) * （用户真滑动的距离/canvas总宽度）
       // 最后+ 的是补上slider和滑块宽度不一致造成的缝隙
       const x = Math.abs(
@@ -542,6 +541,7 @@ export default {
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
           // 成功的回调
+          this.isSubmting = false;
           this.$emit("success", x);
         }, 800);
       } else {
@@ -555,19 +555,28 @@ export default {
         // 800ms后重置
         clearTimeout(this.timer1);
         this.timer1 = setTimeout(() => {
+          this.isSubmting = false;
           this.reset();
         }, 800);
       }
     },
-    // 重置
-    reset() {
+    // 重置 - 重新设置初始状态
+    resetState() {
       this.infoBoxFail = false;
       this.infoBoxShow = false;
-      this.isCanSlide = true;
+      this.isCanSlide = false;
       this.isSuccess = false;
       this.startWidth = this.sliderBaseSize; // 鼠标点下去时父级的width
       this.startX = 0; // 鼠标按下时的X
       this.newX = 0; // 鼠标当前的偏移X
+    },
+
+    // 重置
+    reset() {
+      if(this.isSubmting){
+        return;
+      }
+      this.resetState();
       this.init();
     }
   }

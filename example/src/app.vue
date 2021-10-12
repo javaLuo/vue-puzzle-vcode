@@ -1,7 +1,10 @@
 <template>
   <div>
-    <AuthModelMy :show="show"
-                 @close="onTestClose" @success="onTestClose" @fail="onTestClose"/>
+    <AuthModelMy
+      :show="show"
+      :imgs="imgs"
+      @close="onTestClose"
+      @success="onTestClose"/>
 
     <hr />
     <button @click="onTest">验证</button>
@@ -14,7 +17,7 @@ import Img1 from "./assets/1.jpg";
 export default {
   data() {
     return {
-      imgs: [Img1],
+      imgs: [Img1, "https://isluo.com/kernel/index/img/welcome/girl1.png", "https://isluo.com/kernel/index/img/welcome/theback.jpg"],
       show: false
     };
   },
@@ -29,6 +32,9 @@ export default {
   methods: {
     onTest() {
       this.show = true;
+    },
+    onFail(){
+
     },
     onTestClose() {
       console.log("出发：", this.show);
