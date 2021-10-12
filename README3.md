@@ -1,6 +1,6 @@
 # vue3-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode) [![npm downloads](https://img.shields.io/npm/dt/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode)
 
-以下是在Vue3.0中使用的文档
+以下是在Vue3.x中使用的文档
 
 **DEMO**: https://isluo.com/work/vue-puzzle-vcode/
 
@@ -11,14 +11,6 @@
 
 ```node
   npm install vue3-puzzle-vcode --save
-```
-
-### 使用
-
-```vue
-import Vcode from "vue3-puzzle-vcode";
-
-<Vcode :show="isShow" @success="onSuccess" @close="onClose" />
 ```
 
 ### 最简单例子
@@ -111,3 +103,12 @@ export default {
 
 - 当不传递 imgs 字段或图片加载出错时，会自动生成随机图片
 - 模态框的显示和隐藏完全由父级控制，所以用户通过验证后，需要手动隐藏模态框
+
+### 更新日志
+2021/10/12 - 1.0.2<br/>
+- 修复：删除了一个无用的ref变量引用，这个引用可能导致在vue3.2.19及以下的版本中出现问题
+
+2021/10/12 - 1.0.1<br/>
+- 修复：重复加载图片的问题
+- 修复：png图片的透明部分现在会用白色填充
+- 更新：初始化时不再自动加载图片，直到show出来时再加载
