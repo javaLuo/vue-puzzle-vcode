@@ -24,12 +24,11 @@
                   :height="canvasHeight"
                   :style="`width:${canvasWidth}px;height:${canvasHeight}px`" />
           <!-- 小图 -->
-          <canvas :width="puzzleBaseSize"
+          <canvas ref="canvas2"
                   class="auth-canvas2_"
+                  :width="puzzleBaseSize"
                   :height="canvasHeight"
-                  ref="canvas2"
-                  :style="
-              `width:${puzzleBaseSize}px;height:${canvasHeight}px;transform:translateX(${styleWidth -
+                  :style="`width:${puzzleBaseSize}px;height:${canvasHeight}px;transform:translateX(${styleWidth -
                 sliderBaseSize -
                 (puzzleBaseSize - sliderBaseSize) *
                   ((styleWidth - sliderBaseSize) /
@@ -122,7 +121,7 @@ export default {
       newX: 0, // 鼠标当前的偏移X
       pinX: 0, // 拼图的起始X
       pinY: 0, // 拼图的起始Y
-      loading: true, // 是否正在加在中，主要是等图片onload
+      loading: false, // 是否正在加在中，主要是等图片onload
       isCanSlide: false, // 是否可以拉动滑动条
       error: false, // 图片加在失败会出现这个，提示用户手动刷新
       infoBoxShow: false, // 提示信息是否出现
@@ -131,7 +130,8 @@ export default {
       timer1: null, // setTimout1
       closeDown: false, // 为了解决Mac上的click BUG
       isSuccess: false, // 验证成功
-      imgIndex: -1 // 用于自定义图片时不会随机到重复的图片
+      imgIndex: -1, // 用于自定义图片时不会随机到重复的图片
+      isSubmting: false, // 是否正在判定，主要用于判定中不能点击重置按钮
     });
 
     onMounted(()=>{
@@ -142,10 +142,10 @@ export default {
         passive: false
       });
       document.addEventListener("touchend", onRangeMouseUp, false);
-      if (props.show) {
+      if(props.show){
         document.body.classList.add("vue-puzzle-overflow");
+        reset();
       }
-      reset();
     });
 
     onUnmounted(()=>{
@@ -160,11 +160,14 @@ export default {
     });
 
     // 每次出现都应该重新初始化
-    watch(() => props.show,(newV)=>{
-      if (newV) {
+    watch(() => props.show, (newV) => {
+      if(newV){
         document.body.classList.add("vue-puzzle-overflow");
         reset();
       } else {
+        // 关闭的时候回到初始状态
+        state.isSuccess = false;
+        state.infoBoxShow = false;
         document.body.classList.remove("vue-puzzle-overflow");
       }
     });
@@ -228,6 +231,7 @@ export default {
 
     // 鼠标移动
     const onRangeMouseMove = (e) => {
+      
       if (state.mouseDown) {
         e.preventDefault();
         state.newX = e.clientX || e.changedTouches[0].clientX;
@@ -244,9 +248,13 @@ export default {
 
     /**
      * 私有-开始进行
-     * @param withCanvas 是否强制使用canvas随机作图
+     * @param withCanvas 是否强制使用canvas随机作图,只有图片加载错误后此值才会为真
      */
     const init = (withCanvas) => {
+      // 防止重复加载导致的渲染错误
+      if(state.loading && !withCanvas){
+        return;
+      }
       state.loading = true;
       state.isCanSlide = false;
       const c = canvas1.value;
@@ -255,7 +263,11 @@ export default {
       const ctx = c.getContext("2d");
       const ctx2 = c2.getContext("2d");
       const ctx3 = c3.getContext("2d");
+      const isFirefox = navigator.userAgent.indexOf("Firefox") >= 0 && navigator.userAgent.indexOf("Windows") >= 0; // 是windows版火狐
+          
       const img = document.createElement("img");
+      ctx.fillStyle = "rgba(255,255,255,1)";
+      ctx3.fillStyle = "rgba(255,255,255,1)";
       ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
       ctx2.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
       // 取一个随机坐标，作为拼图块的位置
@@ -265,34 +277,33 @@ export default {
       img.onload = () => {
         const [x, y, w, h] = makeImgSize(img);
         ctx.save();
-        // 先画小图
+        // 先画小图路径
         paintBrick(ctx);
         ctx.closePath();
-        if (
-          !(
-            navigator.userAgent.indexOf("Firefox") >= 0 &&
-            navigator.userAgent.indexOf("Windows") >= 0
-          )
-        ) {
-          // 非火狐，在此画外阴影
+
+        // 非火狐，在此画外阴影
+        // 其他浏览器：先画阴影，阴影会按照路径的外围生成，再clip，会按照阴影的区域clip。如果先裁剪再画阴影，阴影显示不出来,因为阴影在clip区域外面去了
+        // win版火狐，需要先clip，然后再画阴影，阴影可以超出clip的范围。不裁剪直接先画阴影的话，路径不生效，阴影会根据整个图片生成
+        if(!isFirefox){
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
           ctx.shadowColor = "#000";
           ctx.shadowBlur = 3;
           ctx.fill();
+          ctx.clip(); // 按照外阴影区域切割
+        } else {
+          ctx.clip();
+          ctx.save();
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          ctx.shadowColor = "#000";
+          ctx.shadowBlur = 3;
+          ctx.fill();
+          ctx.restore();
         }
-
-        ctx.clip(); // 按照外阴影区域切割
-
-        ctx.save();
-        // 小图外阴影
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.shadowColor = "#000";
-        ctx.shadowBlur = 2;
-        ctx.fill();
-        ctx.restore();
+       
         ctx.drawImage(img, x, y, w, h);
+        ctx3.fillRect(0,0,props.canvasWidth,props.canvasHeight);
         ctx3.drawImage(img, x, y, w, h);
 
         // 设置小图的内阴影
@@ -315,14 +326,10 @@ export default {
         ctx.shadowBlur = Math.min(Math.ceil(8 * props.puzzleScale), 12);
         ctx.fillStyle = "#ffffaa";
         ctx.fill();
+
         // 将小图赋值给ctx2
-        const imgData = ctx.getImageData(
-          state.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
-          state.pinY - 20,
-          state.pinX + puzzleBaseSize.value + 5,
-          state.pinY + puzzleBaseSize.value + 5
-        );
-        ctx2.putImageData(imgData, 0, state.pinY - 20);
+        ctx2.drawImage(c, state.pinX - 3,state.pinY - 20,state.pinX + puzzleBaseSize.value + 5,state.pinY + puzzleBaseSize.value + 5, 
+        0, state.pinY - 20, state.pinX + puzzleBaseSize.value + 5, state.pinY + puzzleBaseSize.value + 5);
 
         // 清理
         ctx.restore();
@@ -522,6 +529,7 @@ export default {
 
     // 私有-开始判定
     const submit = () => {
+      state.isSubmting = true;
       // 偏差 x = puzzle的起始X - (用户真滑动的距离) + (puzzle的宽度 - 滑块的宽度) * （用户真滑动的距离/canvas总宽度）
       // 最后+ 的是补上slider和滑块宽度不一致造成的缝隙
       const x = Math.abs(
@@ -543,6 +551,8 @@ export default {
         clearTimeout(state.timer1);
         state.timer1 = setTimeout(() => {
           // 成功的回调
+          state.isSubmting = false;
+
           context.emit("success", x);
         }, 800);
       } else {
@@ -555,20 +565,28 @@ export default {
         // 800ms后重置
         clearTimeout(state.timer1);
         state.timer1 = setTimeout(() => {
+          state.isSubmting = false;
           reset();
         }, 800);
       }
     };
-
-    // 重置
-    const reset = () => {
+    // 重置 - 重新设置初始状态
+    const resetState = () => {
       state.infoBoxFail = false;
       state.infoBoxShow = false;
-      state.isCanSlide = true;
+      state.isCanSlide = false;
       state.isSuccess = false;
       state.startWidth = sliderBaseSize.value; // 鼠标点下去时父级的width
       state.startX = 0; // 鼠标按下时的X
       state.newX = 0; // 鼠标当前的偏移X
+    }
+
+    // 重置 - 重新加载
+    const reset = () => {
+      if(state.isSubmting){
+        return;
+      }
+      resetState();
       init();
     }
 
@@ -631,7 +649,7 @@ export default {
       background-color: rgba(0, 0, 0, 0.8);
       z-index: 20;
       opacity: 1;
-      transition: opacity 200ms;
+      transition: opacity 100ms;
       display: flex;
       align-items: center;
       justify-content: center;

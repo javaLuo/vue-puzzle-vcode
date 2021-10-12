@@ -11,7 +11,7 @@
 import { ref } from "vue";
 import AuthModelMy from "../../dist/vue3-puzzle-vcode.umd.min.js";
 // import AuthModelMy from "../../src/app.vue";
-import Img1 from "./assets/1.jpg";
+//import Img1 from "./assets/1.jpg";
 export default {
 
   components: {
@@ -33,7 +33,6 @@ export default {
 
     const onFail = (e) => {
       console.log('验证失败:', e);
-      onClose();
     }
     return {
       isShow,

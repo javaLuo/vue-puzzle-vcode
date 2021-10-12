@@ -1,16 +1,32 @@
 {
-  "name": "vue3-demo2",
-  "version": "0.1.0",
-  "private": true,
+  "name": "vue3-puzzle-vcode",
+  "version": "1.0.1",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib",
     "lint": "vue-cli-service lint",
-    "prettier": "prettier --write \"{src,mock}/**/*.{js,css,less}\""
+    "prettier": "prettier --write \"{src,mock}/**/*.{js,css,less,vue}\""
   },
+  "files": ["dist"],
+  "main": "./dist/vue3-puzzle-vcode.umd.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javaLuo/vue-puzzle-vcode.git"
+  },
+  "keywords": [
+    "vue",
+    "puzzle",
+    "vcode"
+  ],
+  "author": "L",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/javaLuo/vue-puzzle-vcode/issues"
+  },
+  "homepage": "https://github.com/javaLuo/vue-puzzle-vcode#readme",
   "dependencies": {
     "core-js": "^3.10.1",
-    "vue": "^3.0.11"
+    "vue": "^3.2.20"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.12",
