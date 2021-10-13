@@ -321,8 +321,16 @@ export default {
         ctx.fill();
 
         // 将小图赋值给ctx2
-        ctx2.drawImage(c, this.pinX - 3,this.pinY - 20,this.pinX + this.puzzleBaseSize + 5,this.pinY + this.puzzleBaseSize + 5, 
-        0, this.pinY - 20, this.pinX + this.puzzleBaseSize + 5, this.pinY + this.puzzleBaseSize + 5);
+        const imgData = ctx.getImageData(
+          this.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
+          this.pinY - 20,
+          this.pinX + this.puzzleBaseSize + 5,
+          this.pinY + this.puzzleBaseSize + 5
+        );
+        ctx2.putImageData(imgData, 0, this.pinY - 20);
+        
+        // ctx2.drawImage(c, this.pinX - 3,this.pinY - 20,this.pinX + this.puzzleBaseSize + 5,this.pinY + this.puzzleBaseSize + 5, 
+        // 0, this.pinY - 20, this.pinX + this.puzzleBaseSize + 5, this.pinY + this.puzzleBaseSize + 5);
 
         // 清理
         ctx.restore();
