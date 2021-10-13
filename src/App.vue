@@ -364,6 +364,7 @@ export default {
         //   state.pinX + puzzleBaseSize.value + 5,
         //   state.pinY + puzzleBaseSize.value + 5
         // );
+        // 之所以要用getImageData，是因为safari中可能有问题，drawImage是异步的
         const imgData = ctx.getImageData(
           state.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
           state.pinY - 20,
