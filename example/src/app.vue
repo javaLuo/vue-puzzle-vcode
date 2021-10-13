@@ -8,13 +8,14 @@
     />
 
     <hr />
-    <button @click="onShow">开始验证</button>
+    <button @click="onShow">开始验证2</button>
   </div>
 </template>
 <script>
 import { ref } from "vue";
-// import AuthModelMy from "../../dist/vue3-puzzle-vcode.umd.min.js";
-import AuthModelMy from "vue3-puzzle-vcode";
+// import AuthModelMy from "../../dist/vue3-puzzle-vcode.umd.js";
+// import AuthModelMy from "vue3-puzzle-vcode";
+import AuthModelMy from "./components/Test.vue";
 //import Img1 from "./assets/1.jpg";
 export default {
   components: {

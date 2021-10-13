@@ -299,6 +299,7 @@ export default {
         props.canvasHeight - puzzleBaseSize.value - 10
       ); // 主图高度 - 拼图块自身高度 - 10边距
       img.crossOrigin = "anonymous"; // 匿名，想要获取跨域的图片
+ 
       img.onload = () => {
         const [x, y, w, h] = makeImgSize(img);
         ctx.save();
@@ -351,7 +352,7 @@ export default {
         ctx.shadowBlur = Math.min(Math.ceil(8 * props.puzzleScale), 12);
         ctx.fillStyle = "#ffffaa";
         ctx.fill();
-
+        
         // 将小图赋值给ctx2
         // ctx2.drawImage(
         //   c,
@@ -364,6 +365,7 @@ export default {
         //   state.pinX + puzzleBaseSize.value + 5,
         //   state.pinY + puzzleBaseSize.value + 5
         // );
+    
         const imgData = ctx.getImageData(
           state.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
           state.pinY - 20,
@@ -373,6 +375,7 @@ export default {
 
         ctx2.putImageData(imgData, 0, state.pinY - 20);
 
+        
         // 清理
         ctx.restore();
         ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
