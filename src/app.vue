@@ -166,6 +166,7 @@ export default {
         document.body.classList.add("vue-puzzle-overflow");
         this.reset();
       } else {
+        this.isSubmting = false;
         this.isSuccess = false;
         this.infoBoxShow = false;
         document.body.classList.remove("vue-puzzle-overflow");
