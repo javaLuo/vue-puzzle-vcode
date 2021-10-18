@@ -1,6 +1,9 @@
 <template>
   <div class="boss">
-      <div class="title">vue-puzzle-vcode DEMO</div>
+      <div class="title">vue3-puzzle-vcode DEMO</div>
+      <a href="https://www.npmjs.com/package/vue3-puzzle-vcode" rel="nofollow">
+        <img src="https://camo.githubusercontent.com/bc3ee51ae20807740d3116de953937a749239cc75e48523d084825f297bd19d3/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f762f767565332d70757a7a6c652d76636f64652e737667" alt="npm" data-canonical-src="https://img.shields.io/npm/v/vue3-puzzle-vcode.svg" style="max-width:100%;">
+      </a>
       <el-divider>基本</el-divider>
       <el-button plain @click="onShow1">开始验证</el-button>
       <div class="info">调整拼图块尺寸(puzzleScale, 单位：倍率，默认1)</div>
@@ -102,7 +105,7 @@ export default {
     text-align: center;
     .title{
       font-size: 24px;
-      padding: 40px 0;
+      padding: 40px 0 20px 0;
     }
     .slider{
       width: 240px;

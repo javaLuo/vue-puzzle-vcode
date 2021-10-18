@@ -8771,19 +8771,19 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue3-puzzle-vcode@1.0.3-beta2:
-  version "1.0.3-beta2"
-  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.3-beta2.tgz#48818e5cf28ca9a2b3833f93aa7129128cc56763"
-  integrity sha512-KWhdA4TD+YtJM0BiHCgklSglerUywlKAE7nnqG/TjYYFKc3ZPzdzDk9CpV4SqsktKkyZWY56ObHCOSnMdBYACg==
+vue3-puzzle-vcode@^1.0.2-beta2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.2.tgz#dbce5169deb34b3ff9a040372bef5db21ee6bfc8"
+  integrity sha512-JJQqU94vdhZGJg3LUST8WiZRcH3/KmZYtaKHuvREfs5v4Z793Fkv3wJXYeOkRj7/DvZaYluVPeHMwx1mrkaMWA==
   dependencies:
     core-js "3.18.2"
     vue "^3.2.20"
     vue3-puzzle-vcode "^1.0.2-beta2"
 
-vue3-puzzle-vcode@^1.0.2-beta2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.2.tgz#dbce5169deb34b3ff9a040372bef5db21ee6bfc8"
-  integrity sha512-JJQqU94vdhZGJg3LUST8WiZRcH3/KmZYtaKHuvREfs5v4Z793Fkv3wJXYeOkRj7/DvZaYluVPeHMwx1mrkaMWA==
+vue3-puzzle-vcode@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.4.tgz#5a3f5ba1b7b915e28d47efe233f0564cbac0a6fa"
+  integrity sha512-fjYhx9v+QhwUYPURfREVnyLSaA69YLKwF1pubxehUcHKfi7iPVCHgrWhaJF3raMI+0t7SnL/XS1pJgklty7rEw==
   dependencies:
     core-js "3.18.2"
     vue "^3.2.20"
