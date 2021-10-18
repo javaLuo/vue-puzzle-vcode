@@ -1,6 +1,6 @@
 {
   "name": "vue3-puzzle-vcode",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib",

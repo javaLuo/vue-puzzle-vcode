@@ -183,6 +183,7 @@ export default {
           reset();
         } else {
           // 关闭的时候回到初始状态
+          state.isSubmting = false;
           state.isSuccess = false;
           state.infoBoxShow = false;
           document.body.classList.remove("vue-puzzle-overflow");
