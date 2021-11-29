@@ -1,6 +1,6 @@
 {
   "name": "vue3-puzzle-vcode",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib",
@@ -59,7 +59,7 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "prettier/prettier" : "off",
+      "prettier/prettier": "off",
       "no-unreachable": "warn"
     }
   },
