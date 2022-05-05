@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "./app.vue";
 import "./registerServiceWorker";
 import { ElButton, ElDivider, ElSlider } from "element-plus";
 

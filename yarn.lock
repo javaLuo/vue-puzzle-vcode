@@ -2912,11 +2912,6 @@ core-js-compat@^3.16.0, core-js-compat@^3.16.2, core-js-compat@^3.6.5:
     browserslist "^4.17.3"
     semver "7.0.0"
 
-core-js@3.18.2:
-  version "3.18.2"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.18.2.tgz#63a551e8a29f305cd4123754846e65896619ba5b"
-  integrity sha512-zNhPOUoSgoizoSQFdX1MeZO16ORRb9FFQLts8gSYbZU5FcgXhp24iMWMxnOQo5uIaIG7/6FA/IqJPwev1o9ZXQ==
-
 core-js@^2.4.0:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
@@ -8771,25 +8766,12 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue3-puzzle-vcode@^1.0.2-beta2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.2.tgz#dbce5169deb34b3ff9a040372bef5db21ee6bfc8"
-  integrity sha512-JJQqU94vdhZGJg3LUST8WiZRcH3/KmZYtaKHuvREfs5v4Z793Fkv3wJXYeOkRj7/DvZaYluVPeHMwx1mrkaMWA==
-  dependencies:
-    core-js "3.18.2"
-    vue "^3.2.20"
-    vue3-puzzle-vcode "^1.0.2-beta2"
+vue3-puzzle-vcode@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.6.tgz#bf068dbf5b2423dd389b512b6881df6661fdcc5b"
+  integrity sha512-pqfgwpZyq8Luj7hU3V2LsImr47v7stssb4w0LXdZQ1PXgjHrEBeG4f7euvBnT4l5+NuoSpuQYafc2K+YWJntig==
 
-vue3-puzzle-vcode@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/vue3-puzzle-vcode/-/vue3-puzzle-vcode-1.0.4.tgz#5a3f5ba1b7b915e28d47efe233f0564cbac0a6fa"
-  integrity sha512-fjYhx9v+QhwUYPURfREVnyLSaA69YLKwF1pubxehUcHKfi7iPVCHgrWhaJF3raMI+0t7SnL/XS1pJgklty7rEw==
-  dependencies:
-    core-js "3.18.2"
-    vue "^3.2.20"
-    vue3-puzzle-vcode "^1.0.2-beta2"
-
-vue@^3.0.0, vue@^3.2.20:
+vue@^3.0.0:
   version "3.2.20"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.20.tgz#940f8aa8bf3e3be78243ca582bad41fcd45ae3e6"
   integrity sha512-81JjEP4OGk9oO8+CU0h2nFPGgJBm9mNa3kdCX2k6FuRdrWrC+CNe+tOnuIeTg8EWwQuI+wwdra5Q7vSzp7p4Iw==
