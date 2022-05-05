@@ -1,71 +1,31 @@
 {
   "name": "vue3-puzzle-vcode",
-  "version": "1.0.5",
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib",
-    "lint": "vue-cli-service lint",
-    "prettier": "prettier --write \"{src,example}/**/*.{js,css,less,vue}\""
-  },
+  "version": "1.0.6",
   "files": [
     "dist"
   ],
-  "main": "./dist/vue3-puzzle-vcode.umd.min.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/javaLuo/vue-puzzle-vcode.git"
-  },
-  "keywords": [
-    "vue",
-    "puzzle",
-    "vcode"
-  ],
-  "author": "L",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/javaLuo/vue-puzzle-vcode/issues"
-  },
-  "homepage": "https://github.com/javaLuo/vue-puzzle-vcode#readme",
-  "dependencies": {
-    "core-js": "3.18.2",
-    "vue": "^3.2.20",
-    "vue3-puzzle-vcode": "^1.0.2-beta2"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.12",
-    "@vue/cli-plugin-eslint": "~4.5.12",
-    "@vue/cli-service": "~4.5.12",
-    "@vue/compiler-sfc": "3.2.20",
-    "@vue/eslint-config-prettier": "^6.0.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.24.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.9.0",
-    "less": "3.0.4",
-    "less-loader": "5.0.0",
-    "prettier": "^2.2.1"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended",
-      "@vue/prettier"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {
-      "prettier/prettier": "off",
-      "no-unreachable": "warn"
+  "module": "./dist/vue3-puzzle-vcode.es.js",
+  "main": "./dist/vue3-puzzle-vcode.umd.js",
+  "typings": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/vue3-puzzle-vcode.es.js",
+      "require": "./dist/vue3-puzzle-vcode.umd.js"
     }
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.31",
+    "@vitejs/plugin-vue": "^2.3.1",
+    "less": "^4.1.2",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.7",
+    "vite-plugin-dts": "^1.1.1",
+    "vue": "^3.2.25",
+    "vue-tsc": "^0.34.7"
+  }
 }

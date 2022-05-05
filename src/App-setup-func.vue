@@ -87,7 +87,42 @@
     </div>
   </teleport>
 </template>
-<script>
+
+
+<script lang="ts">
+interface State {
+  mouseDown: boolean; // 鼠标是否在按钮上按下
+  startWidth: number; // 鼠标点下去时父级的width
+  startX: number; // 鼠标按下时的X
+  newX: number; // 鼠标当前的偏移X
+  pinX: number; // 拼图的起始X
+  pinY: number; // 拼图的起始Y
+  loading: boolean; // 是否正在加在中，主要是等图片onload
+  isCanSlide: boolean; // 是否可以拉动滑动条
+  error: boolean; // 图片加在失败会出现这个，提示用户手动刷新
+  infoBoxShow: boolean; // 提示信息是否出现
+  infoText: string; // 提示等信息
+  infoBoxFail: boolean; // 是否验证失败
+  timer1: NodeJS.Timeout | undefined; // setTimout1
+  closeDown: boolean; // 为了解决Mac上的click BUG
+  isSuccess: boolean; // 验证成功
+  imgIndex: number; // 用于自定义图片时不会随机到重复的图片
+  isSubmting: boolean; // 是否正在判定，主要用于判定中不能点击重置按钮
+}
+
+interface Props {
+  show: boolean;
+  canvasWidth: number;
+  canvasHeight: number;
+  puzzleScale: number;
+  sliderSize: number;
+  range: number;
+  successText: string;
+  failText: string;
+  sliderText: string;
+  imgs: unknown[] | undefined;
+}
+
 import {
   ref,
   reactive,
@@ -95,8 +130,10 @@ import {
   onUnmounted,
   computed,
   watch,
+  SetupContext,
   toRefs,
 } from "vue";
+
 export default {
   emits: ["success", "fail", "close"],
   props: {
@@ -107,7 +144,6 @@ export default {
     sliderSize: { type: Number, default: 50 }, // 滑块的大小
     range: { type: Number, default: 10 }, // 允许的偏差值
     imgs: {
-      // 所有的背景图片
       type: Array,
     },
     successText: {
@@ -122,31 +158,32 @@ export default {
       type: String,
       default: "拖动滑块完成拼图",
     },
+    aabc: { type: String, default: "拖动滑块完成拼图" },
   },
-  setup(props, context) {
-    const rangeSlider = ref(null);
-    const canvas1 = ref(null);
-    const canvas2 = ref(null);
-    const canvas3 = ref(null);
+  setup(props: Props, context: SetupContext) {
+    const rangeSlider = ref<HTMLDivElement>();
+    const canvas1 = ref<HTMLCanvasElement>();
+    const canvas2 = ref<HTMLCanvasElement>();
+    const canvas3 = ref<HTMLCanvasElement>();
 
-    const state = reactive({
-      mouseDown: false, // 鼠标是否在按钮上按下
-      startWidth: 50, // 鼠标点下去时父级的width
-      startX: 0, // 鼠标按下时的X
-      newX: 0, // 鼠标当前的偏移X
-      pinX: 0, // 拼图的起始X
-      pinY: 0, // 拼图的起始Y
-      loading: false, // 是否正在加在中，主要是等图片onload
-      isCanSlide: false, // 是否可以拉动滑动条
-      error: false, // 图片加在失败会出现这个，提示用户手动刷新
-      infoBoxShow: false, // 提示信息是否出现
-      infoText: "", // 提示等信息
-      infoBoxFail: false, // 是否验证失败
-      timer1: null, // setTimout1
-      closeDown: false, // 为了解决Mac上的click BUG
-      isSuccess: false, // 验证成功
-      imgIndex: -1, // 用于自定义图片时不会随机到重复的图片
-      isSubmting: false, // 是否正在判定，主要用于判定中不能点击重置按钮
+    const state = reactive<State>({
+      mouseDown: false,
+      startWidth: 50,
+      startX: 0,
+      newX: 0,
+      pinX: 0,
+      pinY: 0,
+      loading: false,
+      isCanSlide: false,
+      error: false,
+      infoBoxShow: false,
+      infoText: "",
+      infoBoxFail: false,
+      timer1: undefined,
+      closeDown: false,
+      isSuccess: false,
+      imgIndex: -1,
+      isSubmting: false,
     });
 
     onMounted(() => {
@@ -164,13 +201,11 @@ export default {
     });
 
     onUnmounted(() => {
-      clearTimeout(state.timer1);
+      state.timer1 && clearTimeout(state.timer1);
       document.removeEventListener("mousemove", onRangeMouseMove, false);
       document.removeEventListener("mouseup", onRangeMouseUp, false);
 
-      document.removeEventListener("touchmove", onRangeMouseMove, {
-        passive: false,
-      });
+      document.removeEventListener("touchmove", onRangeMouseMove);
       document.removeEventListener("touchend", onRangeMouseUp, false);
     });
 
@@ -183,6 +218,7 @@ export default {
           reset();
         } else {
           // 关闭的时候回到初始状态
+          state.isSubmting = false;
           state.isSuccess = false;
           state.infoBoxShow = false;
           document.body.classList.remove("vue-puzzle-overflow");
@@ -221,7 +257,7 @@ export default {
     // 私有-关闭
     const onC = () => {
       if (!state.mouseDown) {
-        clearTimeout(state.timer1);
+        state.timer1 && clearTimeout(state.timer1);
         context.emit("close");
       }
     };
@@ -238,20 +274,26 @@ export default {
     };
 
     // 鼠标按下准备拖动
-    const onRangeMouseDown = (e) => {
+    const onRangeMouseDown = (e: Event) => {
       if (state.isCanSlide) {
         state.mouseDown = true;
-        state.startWidth = rangeSlider.value.clientWidth;
-        state.newX = e.clientX || e.changedTouches[0].clientX;
-        state.startX = e.clientX || e.changedTouches[0].clientX;
+        state.startWidth = rangeSlider.value?.clientWidth ?? 0;
+        state.newX =
+          (e as MouseEvent).clientX ||
+          (e as TouchEvent).changedTouches[0].clientX;
+        state.startX =
+          (e as MouseEvent).clientX ||
+          (e as TouchEvent).changedTouches[0].clientX;
       }
     };
 
     // 鼠标移动
-    const onRangeMouseMove = (e) => {
+    const onRangeMouseMove = (e: Event) => {
       if (state.mouseDown) {
         e.preventDefault();
-        state.newX = e.clientX || e.changedTouches[0].clientX;
+        state.newX =
+          (e as MouseEvent).clientX ||
+          (e as TouchEvent).changedTouches[0].clientX;
       }
     };
 
@@ -267,7 +309,7 @@ export default {
      * 私有-开始进行
      * @param withCanvas 是否强制使用canvas随机作图,只有图片加载错误后此值才会为真
      */
-    const init = (withCanvas) => {
+    const init = (withCanvas = false) => {
       // 防止重复加载导致的渲染错误
       if (state.loading && !withCanvas) {
         return;
@@ -277,9 +319,15 @@ export default {
       const c = canvas1.value;
       const c2 = canvas2.value;
       const c3 = canvas3.value;
-      const ctx = c.getContext("2d");
-      const ctx2 = c2.getContext("2d");
-      const ctx3 = c3.getContext("2d");
+      const ctx = c?.getContext("2d");
+      const ctx2 = c2?.getContext("2d");
+      const ctx3 = c3?.getContext("2d");
+
+      if (!ctx || !ctx2 || !ctx3) {
+        console.error("not found ctx / ctx2 / ctx3");
+        return;
+      }
+
       const isFirefox =
         navigator.userAgent.indexOf("Firefox") >= 0 &&
         navigator.userAgent.indexOf("Windows") >= 0; // 是windows版火狐
@@ -299,7 +347,6 @@ export default {
         props.canvasHeight - puzzleBaseSize.value - 10
       ); // 主图高度 - 拼图块自身高度 - 10边距
       img.crossOrigin = "anonymous"; // 匿名，想要获取跨域的图片
- 
       img.onload = () => {
         const [x, y, w, h] = makeImgSize(img);
         ctx.save();
@@ -352,7 +399,7 @@ export default {
         ctx.shadowBlur = Math.min(Math.ceil(8 * props.puzzleScale), 12);
         ctx.fillStyle = "#ffffaa";
         ctx.fill();
-        
+
         // 将小图赋值给ctx2
         // ctx2.drawImage(
         //   c,
@@ -365,7 +412,7 @@ export default {
         //   state.pinX + puzzleBaseSize.value + 5,
         //   state.pinY + puzzleBaseSize.value + 5
         // );
-    
+        // 之所以要用getImageData，是因为safari中可能有问题，drawImage是异步的
         const imgData = ctx.getImageData(
           state.pinX - 3, // 为了阴影 是从-3px开始截取，判定的时候要+3px
           state.pinY - 20,
@@ -375,7 +422,6 @@ export default {
 
         ctx2.putImageData(imgData, 0, state.pinY - 20);
 
-        
         // 清理
         ctx.restore();
         ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
@@ -418,7 +464,7 @@ export default {
         init(true); // 如果图片加载错误就重新来，并强制用canvas随机作图
       };
 
-      if (!withCanvas && props.imgs && props.imgs.length) {
+      if (!withCanvas && props.imgs?.length) {
         let randomNum = getRandom(0, props.imgs.length - 1);
         if (randomNum === state.imgIndex) {
           if (randomNum === props.imgs.length - 1) {
@@ -428,19 +474,19 @@ export default {
           }
         }
         state.imgIndex = randomNum;
-        img.src = props.imgs[randomNum];
+        img.src = props.imgs[randomNum] as string;
       } else {
         img.src = makeImgWithCanvas();
       }
     };
 
     // 工具 - 范围随机数
-    const getRandom = (min, max) => {
+    const getRandom = (min: number, max: number): number => {
       return Math.ceil(Math.random() * (max - min) + min);
     };
 
     // 工具 - 设置图片尺寸cover方式贴合canvas尺寸 w/h
-    const makeImgSize = (img) => {
+    const makeImgSize = (img: HTMLImageElement) => {
       const imgScale = img.width / img.height;
       const canvasScale = props.canvasWidth / props.canvasHeight;
       let x = 0,
@@ -462,7 +508,7 @@ export default {
     };
 
     // 私有-绘制拼图块的路径
-    const paintBrick = (ctx) => {
+    const paintBrick = (ctx: CanvasRenderingContext2D) => {
       const moveL = Math.ceil(15 * props.puzzleScale); // 直线移动的基础距离
       ctx.beginPath();
       ctx.moveTo(state.pinX, state.pinY);
@@ -525,6 +571,11 @@ export default {
     const makeImgWithCanvas = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        console.error("not found ctx");
+        return "";
+      }
       canvas.width = props.canvasWidth;
       canvas.height = props.canvasHeight;
       ctx.fillStyle = `rgb(${getRandom(100, 255)},${getRandom(
@@ -593,11 +644,10 @@ export default {
         state.isCanSlide = false;
         state.isSuccess = true;
         // 成功后准备关闭
-        clearTimeout(state.timer1);
+        state.timer1 && clearTimeout(state.timer1);
         state.timer1 = setTimeout(() => {
           // 成功的回调
           state.isSubmting = false;
-
           context.emit("success", x);
         }, 800);
       } else {
@@ -608,7 +658,7 @@ export default {
         state.isCanSlide = false;
         context.emit("fail", x);
         // 800ms后重置
-        clearTimeout(state.timer1);
+        state.timer1 && clearTimeout(state.timer1);
         state.timer1 = setTimeout(() => {
           state.isSubmting = false;
           reset();
