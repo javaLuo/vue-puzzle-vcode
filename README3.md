@@ -1,13 +1,11 @@
 # vue3-puzzle-vcode [![npm](https://img.shields.io/npm/v/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode) [![npm downloads](https://img.shields.io/npm/dt/vue3-puzzle-vcode.svg)](https://www.npmjs.com/package/vue3-puzzle-vcode)
 
-以下是在Vue3.x中使用的文档
-
 **DEMO**: https://isluo.com/work/vue-puzzle-vcode/
 
 ![img](public/demo.gif)
 
 
-### Vue3.x 安装 vue3-puzzle-vcode
+### 安装 vue3-puzzle-vcode
 
 ```node
   npm install vue3-puzzle-vcode --save
@@ -20,36 +18,23 @@
     <Vcode :show="isShow" @success="onSuccess" @close="onClose" />
 </template>
 
-<script>
-import { ref } from "vue";
-import Vcode from "vue3-puzzle-vcode";
-export default {
-  components:{
-    Vcode
-  },
-  setup() {
-    const isShow = ref(false);
+<script setup>
+  import { ref } from "vue";
+  import Vcode from "vue3-puzzle-vcode";
 
-    const onShow = () => {
-      isShow.value = true;
-    };
+  const isShow = ref(false);
 
-    const onClose = () => {
-      isShow.value = false;
-    };
+  const onShow = () => {
+    isShow.value = true;
+  };
 
-    const onSuccess = () => {
-      onClose(); // 验证成功，需要手动关闭模态框
-    };
+  const onClose = () => {
+    isShow.value = false;
+  };
 
-    return {
-      isShow,
-      onShow,
-      onClose,
-      onSuccess
-    };
-  }
-};
+  const onSuccess = () => {
+    onClose(); // 验证成功，需要手动关闭模态框
+  };
 </script>
 ```
 
@@ -84,18 +69,12 @@ export default {
 </template>
 
 <script>
+import Vcode from "vue3-puzzle-vcode";
 import Img1 from "~/assets/img1.png";
 import Img2 from "~/assets/img2.png";
 
-export default {
-  setup(){
-    const imgs = [Img1, Img2];
+const imgs = [Img1, Img2];
 
-    return {
-      imgs
-    }
-  }
-};
 </script>
 ```
 
