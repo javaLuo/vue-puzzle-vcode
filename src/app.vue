@@ -207,7 +207,7 @@ export default {
   methods: {
     // 关闭
     onClose() {
-      if (!this.mouseDown) {
+      if (!this.mouseDown && !this.isSubmting) {
         clearTimeout(this.timer1);
         this.$emit("close");
       }
