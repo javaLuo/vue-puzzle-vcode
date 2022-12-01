@@ -1,6 +1,6 @@
 {
   "name": "vue3-puzzle-vcode",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "files": [
     "dist"
   ],
@@ -25,6 +25,7 @@
     "typescript": "^4.5.4",
     "vite": "^2.9.7",
     "vite-plugin-dts": "^1.1.1",
+    "vite-plugin-libcss": "^1.0.5",
     "vue": "^3.2.25",
     "vue-tsc": "^0.34.7"
   }

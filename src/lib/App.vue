@@ -232,7 +232,7 @@ const sliderBaseSize = computed(() => {
 
 // 私有-关闭
 const onC = () => {
-  if (!state.mouseDown) {
+  if (!state.mouseDown && !state.isSubmting) {
     state.timer1 && clearTimeout(state.timer1);
     emit("close");
   }

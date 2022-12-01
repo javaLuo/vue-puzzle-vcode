@@ -2,14 +2,11 @@
 
 <template>
   <div @click="onClick">{{ name }}, {{ nameP }}</div>
-  <!-- <Vcode
-    :show="show"
-    :imgs="['https://isluo.com/work/water/libs/imgs/logo.png']"
-  /> -->
+  <!-- <Vcode :show="show" @close="onClose" @success="onClose" /> -->
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+// import { defineProps, defineEmits } from "vue";
 import { ref } from "vue";
 // import Vcode from "./lib/main";
 // import Vcode from "../dist/vue3-puzzle-vcode.es";
@@ -26,6 +23,10 @@ let show = ref(false);
 
 function onClick() {
   show.value = true;
+}
+
+function onClose() {
+  show.value = false;
 }
 </script>
 
