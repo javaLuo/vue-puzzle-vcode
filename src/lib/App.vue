@@ -292,7 +292,7 @@ const init = (withCanvas = false) => {
   const c = canvas1.value;
   const c2 = canvas2.value;
   const c3 = canvas3.value;
-  const ctx = c?.getContext("2d");
+  const ctx = c?.getContext("2d", { willReadFrequently: true });
   const ctx2 = c2?.getContext("2d");
   const ctx3 = c3?.getContext("2d");
 
