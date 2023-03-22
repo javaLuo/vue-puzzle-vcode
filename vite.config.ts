@@ -11,7 +11,7 @@ module.exports = defineConfig({
   resolve: { dedupe: ['vue'] },
   build: {
     lib: {
-      name: 'vue3-puzzle-vcode',
+      name: 'vue3PuzzleVcode',
       entry: resolve(__dirname, 'src/lib/main.ts'),
       fileName: (format) => `vue3-puzzle-vcode.${format}.js`
     },
