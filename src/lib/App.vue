@@ -253,7 +253,7 @@ const onCloseMouseUp = () => {
 const onRangeMouseDown = (e: Event) => {
   if (state.isCanSlide) {
     state.mouseDown = true;
-    state.startWidth = rangeSlider.value?.clientWidth ?? 0;
+    state.startWidth = rangeSlider.value?.clientWidth || 0;
     state.newX =
       (e as MouseEvent).clientX || (e as TouchEvent).changedTouches[0].clientX;
     state.startX =
