@@ -2,7 +2,13 @@
 
 <template>
   <div @click="onClick">{{ name }}, {{ nameP }}</div>
-  <!-- <Vcode :show="show" @close="onClose" @success="onClose" /> -->
+  <!-- <Vcode
+    :show="show"
+    @close="onClose"
+    @success="onClose"
+    @reset="onRest"
+    className="test"
+  /> -->
 </template>
 
 <script setup lang="ts">
@@ -28,9 +34,13 @@ function onClick() {
 function onClose() {
   show.value = false;
 }
+
+function onRest() {
+  console.log("重置");
+}
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -38,5 +48,9 @@ function onClose() {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+:global(.test .vue-auth-box_) {
+  background-color: #f00;
 }
 </style>

@@ -2,7 +2,7 @@
   <teleport to="body">
     <!-- 本体部分 -->
     <div
-      :class="['vue-puzzle-vcode', { show_: show }]"
+      :class="['vue-puzzle-vcode', { show_: show }, className]"
       @mousedown="onCloseMouseDown"
       @mouseup="onCloseMouseUp"
       @touchstart="onCloseMouseDown"
@@ -64,7 +64,7 @@
                 : `-${canvasHeight * 0.578}px`
             }) skew(-30deg, 0);`"
           ></div>
-          <img class="reset_" @click="reset" src="./assets/reset.png" />
+          <img class="reset_" @click="reset(true)" src="./assets/reset.png" />
         </div>
         <div class="auth-control_">
           <div class="range-box" :style="`height:${sliderBaseSize}px`">
@@ -144,7 +144,7 @@ interface State {
   isSubmting: boolean; // 是否正在判定，主要用于判定中不能点击重置按钮
 }
 
-const emit = defineEmits(["success", "fail", "close"]);
+const emit = defineEmits(["success", "fail", "close", "reset"]);
 const props = defineProps({
   canvasWidth: { type: Number, default: 310 }, // 主canvas的宽
   canvasHeight: { type: Number, default: 160 }, // 主canvas的高
@@ -167,6 +167,10 @@ const props = defineProps({
   sliderText: {
     type: String,
     default: "拖动滑块完成拼图",
+  },
+  className: {
+    type: String,
+    default: "",
   },
 });
 
@@ -647,12 +651,13 @@ const resetState = () => {
 };
 
 // 重置 - 重新加载
-const reset = () => {
+const reset = (needEmit?: boolean) => {
   if (state.isSubmting) {
     return;
   }
   resetState();
   init();
+  needEmit && emit("reset");
 };
 </script>
 <style lang="less">
