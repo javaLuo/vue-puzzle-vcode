@@ -52,6 +52,7 @@
 | successText  | String  | "验证通过！"       | 验证成功时的提示文字                                                          |
 | failText     | String  | "验证失败，请重试" | 验证失败时的提示文字                                                          |
 | sliderText   | String  | "拖动滑块完成拼图" | 下方滑动条里的文字                                                            |
+| className    | String  | ""               | 给根元素一个class类用于自定义样式                                              |
 
 ### 事件
 
@@ -60,7 +61,7 @@
 | success | 偏差值 | 验证通过时会触发，返回值是用户移动的距离跟目标距离的偏差值 px |
 | fail    | 偏差值 | 验证失败时会触发，返回值同上                                  |
 | close   | null   | 用户点击遮罩层的回调                                          |
-
+| reset    | null  | 用户手动点击右上角刷新按钮时的回调                            |
 
 ### 自定义图片
 ```vue
