@@ -1,6 +1,6 @@
 {
   "name": "vue3-puzzle-vcode",
-  "version": "1.0.12",
+  "version": "1.0.15-nuxt",
   "files": [
     "dist"
   ],
@@ -11,6 +11,10 @@
     ".": {
       "import": "./dist/vue3-puzzle-vcode.es.js",
       "require": "./dist/vue3-puzzle-vcode.umd.js"
+    },
+    "./css": {
+      "import": "./dist/main.css",
+      "require": "./dist/main.css"
     }
   },
   "scripts": {
