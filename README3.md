@@ -11,6 +11,14 @@
   npm install vue3-puzzle-vcode --save
 ```
 
+### Nuxt3: 如果你使用Nuxt3框架，请安装以下Nuxt专用版本
+```node
+  npm install vue3-puzzle-vcode@1.0.15-nuxt --save
+```
+
+- 为什么要这样?
+`Nuxt3`打包服务器端代码使用了`Nitro`库，这个库打包时不知为何无法识别相对路径的CSS代码，因此我为Nuxt3专门制作了一个版本<br/>
+以后每次发布新的版本时，都会同时发布一个专用于`Nuxt`的版本，后缀为`-nuxt`；
 ### 最简单例子
 ```vue
 <template>
