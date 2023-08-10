@@ -4,6 +4,7 @@
   <div @click="onClick">{{ name }}, {{ nameP }}</div>
   <!-- <Vcode
     :show="show"
+    :zIndex="998"
     @close="onClose"
     @success="onClose"
     @reset="onRest"
@@ -12,6 +13,11 @@
 </template>
 
 <script setup lang="ts">
+// 关于打包
+// 普通包，build后正常发
+// nuxt包，build后把vue3-puzzle.vocde.es.js第一行改为 import "vue3-puzzle-vcode/css";
+// package.json里已经配置了./css， 就是为nuxt设置的
+
 // import { defineProps, defineEmits } from "vue";
 import { ref } from "vue";
 // import Vcode from "./lib/main";

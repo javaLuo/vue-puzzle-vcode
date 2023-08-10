@@ -3,6 +3,7 @@
     <!-- 本体部分 -->
     <div
       :class="['vue-puzzle-vcode', { show_: show }, className]"
+      :style="bodyStyle"
       @mousedown="onCloseMouseDown"
       @mouseup="onCloseMouseUp"
       @touchstart="onCloseMouseDown"
@@ -152,6 +153,7 @@ const props = defineProps({
   puzzleScale: { type: Number, default: 1 }, // 拼图块的大小缩放比例
   sliderSize: { type: Number, default: 50 }, // 滑块的大小
   range: { type: Number, default: 10 }, // 允许的偏差值
+  zIndex: { type: Number, default: 999 }, // 层级
   imgs: {
     type: Array,
     default: null,
@@ -232,6 +234,14 @@ const sliderBaseSize = computed(() => {
     Math.min(Math.round(props.sliderSize), Math.round(props.canvasWidth * 0.5)),
     10
   );
+});
+
+// body的style设置
+const bodyStyle = computed(() => {
+  if (props.zIndex !== 999) {
+    return `z-index:${props.zIndex}`;
+  }
+  return "";
 });
 
 // 私有-关闭

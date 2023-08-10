@@ -1,6 +1,6 @@
 {
   "name": "vue3-puzzle-vcode",
-  "version": "1.0.15-nuxt",
+  "version": "1.0.16-nuxt",
   "files": [
     "dist"
   ],
