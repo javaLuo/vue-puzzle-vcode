@@ -77,7 +77,7 @@
   <Vcode :imgs="imgs" />
 </template>
 
-<script>
+<script setup>
 import Vcode from "vue3-puzzle-vcode";
 import Img1 from "~/assets/img1.png";
 import Img2 from "~/assets/img2.png";
