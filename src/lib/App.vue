@@ -204,7 +204,6 @@ watch(
   () => props.show,
   (newV) => {
     if (newV) {
-      console.log('你触发了？', newV);
       !state.isInside && document.body.classList.add("vue-puzzle-overflow");
       reset();
     } else {
