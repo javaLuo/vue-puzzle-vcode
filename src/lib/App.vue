@@ -106,7 +106,7 @@ onMounted(() => {
   state.isInside = props.type === 'inside';
 
   if (props.show) {
-    state.isInside && document.body.classList.add("vue-puzzle-overflow");
+    !state.isInside && document.body.classList.add("vue-puzzle-overflow");
     reset();
   }
 });
@@ -204,6 +204,7 @@ watch(
   () => props.show,
   (newV) => {
     if (newV) {
+      console.log('你触发了？', newV);
       !state.isInside && document.body.classList.add("vue-puzzle-overflow");
       reset();
     } else {
@@ -219,6 +220,7 @@ watch(
 watch(()=> props.type, (newV) =>{
   if(newV === 'inside'){
     state.isInside = true;
+    document.body.classList.remove("vue-puzzle-overflow");
   } else {
     state.isInside = false;
   }

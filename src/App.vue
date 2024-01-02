@@ -4,7 +4,8 @@
   <div @click="onClick">{{ name }}, {{ nameP }}</div>
   <div class="test">
     <Vcode
-      :show="show"
+      :show="true"
+      type="inside"
       :zIndex="998"
       @close="onClose"
       @success="onClose"
