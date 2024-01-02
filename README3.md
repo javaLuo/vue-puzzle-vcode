@@ -11,14 +11,6 @@
   npm install vue3-puzzle-vcode --save
 ```
 
-### Nuxt3: 如果你使用Nuxt3框架，请安装以下Nuxt专用版本
-```node
-  npm install vue3-puzzle-vcode@1.0.15-nuxt --save
-```
-
-- 为什么要这样?<br/>
-`Nuxt3`打包服务器端代码使用了`Nitro`库，这个库打包时不知为何无法识别相对路径的CSS代码，因此我为Nuxt3专门制作了一个版本<br/>
-以后每次发布新的版本时，都会同时发布一个专用于`Nuxt`的版本，后缀为`-nuxt`；
 ### 最简单例子
 ```vue
 <template>
@@ -51,6 +43,7 @@
 | 字段         | 类型    | 默认值             | 说明                                                                          |
 | ------------ | ------- | ------------------ | ----------------------------------------------------------------------------- |
 | show         | Boolean | false              | 是否显示验证码弹框                                                            |
+| type         | String  | "modal"            | "modal"模态框模式/"inside"内嵌模式                                            |
 | canvasWidth  | Number  | 310                | 主图区域的宽度，单位 px                                                       |
 | canvasHeight | Number  | 160                | 主图区域的高度，单位 px                                                       |
 | puzzleScale  | Number  | 1                  | 拼图块(小的拼图)的大小比例，0.2 ～ 2 ，数字越大，拼图越大                     |
@@ -87,12 +80,53 @@ const imgs = [Img1, Img2];
 </script>
 ```
 
+### 内嵌模式
+```vue
+<template>
+  <div class="box">
+    <Vcode type="inside" />
+  </div>
+</template>
+
+<style>
+  .box{
+    position: relative;
+    width: 500px;
+  }
+</style>
+```
+内嵌模式下，需要自己处理容器样式。
+
+### 手动刷新
+每当`:show="isShow"` isShow等于true时，会自动刷新一次内部状态<br/>
+你也可以手动刷新：
+```vue
+  <Vcode ref="vcode" />
+
+  <script setup>
+    const vcode = ref(null);
+    vcode.value.reset(); // 手动刷新
+  </script>
+```
+
 ### 说明
 
 - 当不传递 imgs 字段或图片加载出错时，会自动生成随机图片
 - 模态框的显示和隐藏完全由父级控制，所以用户通过验证后，需要手动隐藏模态框
 
+### Nuxt3: 如果你使用Nuxt3发现样式出现问题，请使用以下专用版本试试
+```node
+  npm install vue3-puzzle-vcode@1.1.5-nuxt --save
+```
+
+- 为什么要这样?<br/>
+`Nuxt3`打包服务器端代码使用了`Nitro`库，这个库打包时不知为何无法识别相对路径的CSS代码，因此为Nuxt3专门制作了一个版本<br/>
+以后每次发布新的版本时，都会同时发布一个专用于`Nuxt`的版本，后缀为`-nuxt`；
+
 ### 更新日志
+2023/01/02 - 1.1.5<br/>
+- 新增: 内嵌模式
+
 2022/12/01 - 1.0.7<br/>
 - 修复: 修复了一个在判定中关闭模态框可能会导致reset失效的问题
 
