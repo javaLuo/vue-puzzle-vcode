@@ -1,8 +1,7 @@
 <template>
-  <teleport to="body">
-    <!-- 本体部分 -->
+  <teleport to="body" :disabled="state.isInside">
     <div
-      :class="['vue-puzzle-vcode', { show_: show }, className]"
+      :class="['vue-puzzle-vcode', { inside_: state.isInside, show_: show }, className]"
       :style="bodyStyle"
       @mousedown="onCloseMouseDown"
       @mouseup="onCloseMouseUp"
@@ -10,13 +9,13 @@
       @touchend="onCloseMouseUp"
     >
       <div class="vue-auth-box_" @mousedown.stop @touchstart.stop>
-        <div class="auth-body_" :style="`height: ${canvasHeight}px`">
+        <div class="auth-body_" :style="`width:${canvasWidth}px;height: ${canvasHeight}px`">
           <!-- 主图，有缺口 -->
           <canvas
             ref="canvas1"
+            class="auth-canvas1_"
             :width="canvasWidth"
             :height="canvasHeight"
-            :style="`width:${canvasWidth}px;height:${canvasHeight}px`"
           />
           <!-- 成功后显示的完整图 -->
           <canvas
@@ -24,7 +23,6 @@
             :class="['auth-canvas3_', { show: state.isSuccess }]"
             :width="canvasWidth"
             :height="canvasHeight"
-            :style="`width:${canvasWidth}px;height:${canvasHeight}px`"
           />
           <!-- 小图 -->
           <canvas
@@ -68,7 +66,7 @@
           <img class="reset_" @click="reset(true)" src="./assets/reset.png" />
         </div>
         <div class="auth-control_">
-          <div class="range-box" :style="`height:${sliderBaseSize}px`">
+          <div class="range-box" :style="`height:${sliderBaseSize}px;width:${canvasWidth}px`">
             <div class="range-text">{{ sliderText }}</div>
             <div
               class="range-slider"
@@ -101,12 +99,14 @@ onMounted(() => {
   document.addEventListener("mousemove", onRangeMouseMove, false);
   document.addEventListener("mouseup", onRangeMouseUp, false);
 
-  document.addEventListener("touchmove", onRangeMouseMove, {
-    passive: false,
-  });
+  document.addEventListener("touchmove", onRangeMouseMove, { passive: false });
   document.addEventListener("touchend", onRangeMouseUp, false);
+
+  // 为了SSR渲染，延迟设置
+  state.isInside = props.type === 'inside';
+
   if (props.show) {
-    document.body.classList.add("vue-puzzle-overflow");
+    state.isInside && document.body.classList.add("vue-puzzle-overflow");
     reset();
   }
 });
@@ -126,6 +126,7 @@ const canvas2 = ref<HTMLCanvasElement>();
 const canvas3 = ref<HTMLCanvasElement>();
 
 interface State {
+  isInside: boolean; // 为了SSR， 是否是内置模式
   mouseDown: boolean; // 鼠标是否在按钮上按下
   startWidth: number; // 鼠标点下去时父级的width
   startX: number; // 鼠标按下时的X
@@ -147,6 +148,7 @@ interface State {
 
 const emit = defineEmits(["success", "fail", "close", "reset"]);
 const props = defineProps({
+  type: {type: String, default: 'modal'}, // 模式 modal,inside
   canvasWidth: { type: Number, default: 310 }, // 主canvas的宽
   canvasHeight: { type: Number, default: 160 }, // 主canvas的高
   show: { type: Boolean, default: false }, // 是否出现，由父级控制
@@ -177,6 +179,7 @@ const props = defineProps({
 });
 
 const state = reactive<State>({
+  isInside: false,
   mouseDown: false,
   startWidth: 50,
   startX: 0,
@@ -201,7 +204,7 @@ watch(
   () => props.show,
   (newV) => {
     if (newV) {
-      document.body.classList.add("vue-puzzle-overflow");
+      !state.isInside && document.body.classList.add("vue-puzzle-overflow");
       reset();
     } else {
       // 关闭的时候回到初始状态
@@ -212,6 +215,14 @@ watch(
     }
   }
 );
+
+watch(()=> props.type, (newV) =>{
+  if(newV === 'inside'){
+    state.isInside = true;
+  } else {
+    state.isInside = false;
+  }
+});
 
 // styleWidth是底部用户操作的滑块的父级，就是轨道在鼠标的作用下应该具有的宽度
 const styleWidth = computed(() => {
@@ -253,6 +264,7 @@ const onC = () => {
 };
 
 const onCloseMouseDown = () => {
+  if(state.isInside) return;
   state.closeDown = true;
 };
 
@@ -669,6 +681,9 @@ const reset = (needEmit?: boolean) => {
   init();
   needEmit && emit("reset");
 };
+
+defineExpose({ reset });
+
 </script>
 <style lang="less">
 .vue-puzzle-vcode {
@@ -682,6 +697,21 @@ const reset = (needEmit?: boolean) => {
   opacity: 0;
   pointer-events: none;
   transition: opacity 200ms;
+  &.inside_{
+    position: relative;
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    .vue-auth-box_ {
+      position: relative;
+      top: 0;
+      left: 0;
+      transform: translate(0, 0);
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
   &.show_ {
     opacity: 1;
     pointer-events: auto;
@@ -787,6 +817,10 @@ const reset = (needEmit?: boolean) => {
         background-color: #ce594b;
       }
     }
+    .auth-canvas1_{
+      width: 100%;
+      height: 100%;
+    }
     .auth-canvas2_ {
       position: absolute;
       top: 0;
@@ -797,6 +831,8 @@ const reset = (needEmit?: boolean) => {
     }
     .auth-canvas3_ {
       position: absolute;
+      width: 100%;
+      height: 100%;
       top: 0;
       left: 0;
       opacity: 0;

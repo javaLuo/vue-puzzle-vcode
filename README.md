@@ -41,6 +41,7 @@
 | 字段         | 类型    | 默认值             | 说明                                                                          |
 | ------------ | ------- | ------------------ | ----------------------------------------------------------------------------- |
 | show         | Boolean | false              | 是否显示验证码弹框                                                            |
+| type         | String  | "modal"            | "modal"模态框形式 / "inside"内嵌形式                                          |
 | canvasWidth  | Number  | 310                | 主图区域的宽度，单位 px                                                       |
 | canvasHeight | Number  | 160                | 主图区域的高度，单位 px                                                       |
 | puzzleScale  | Number  | 1                  | 拼图块(小的拼图)的大小比例，0.2 ～ 2 ，数字越大，拼图越大                     |
@@ -60,3 +61,29 @@
 | fail    | 偏差值 | 验证失败时会触发，返回值同上                                  |
 | close   | null   | 用户点击遮罩层的回调                                          |
 | reset   | null   | 用户手动点击右上角刷新按钮时触发的回调                         |
+
+### 内嵌形式
+
+入参type="inside"， 将启用内嵌模式
+应该用一个元素包裹`<Vcode />`：
+
+```vue
+<template>
+  <div class="box">
+    <Vcode type="inside" :show="isShow" />
+  </div>
+</template>
+
+<style>
+  .box{
+    position: relative;
+    width: 320px;
+    height: auto;
+  }
+</style>
+```
+
+### Nuxt.js注意
+
+Nuxt.js中如果发现样式有问题，请使用`npm install vue3-puzzle-vcode@1.1.2-nuxt`这个版本试试。
+
