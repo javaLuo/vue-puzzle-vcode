@@ -3,7 +3,7 @@
 <template>
   <div @click="onClick">{{ name }}, {{ nameP }}</div>
   <div class="test">
-    <Vcode
+    <!-- <Vcode
       :show="true"
       type="inside"
       :zIndex="998"
@@ -12,7 +12,7 @@
       @success="onClose"
       @reset="onRest"
       className="test"
-    />
+    /> -->
   </div>
   
 </template>
@@ -26,7 +26,7 @@
 
 // import { defineProps, defineEmits } from "vue";
 import { ref } from "vue";
-import Vcode from "./lib/main";
+// import Vcode from "./lib/main";
 // import Vcode from "../dist/vue3-puzzle-vcode.es";
 
 const $emit = defineEmits(["updata"]);
