@@ -116,7 +116,7 @@ const imgs = [Img1, Img2];
 
 ### Nuxt3: 如果你使用Nuxt3发现样式出现问题，请使用以下专用版本试试
 ```node
-  npm install vue3-puzzle-vcode@1.1.5-nuxt --save
+  npm install vue3-puzzle-vcode@1.1.6-nuxt --save
 ```
 
 - 为什么要这样?<br/>
