@@ -7,6 +7,7 @@
       :show="true"
       type="inside"
       :zIndex="998"
+      :puzzleScale="1"
       @close="onClose"
       @success="onClose"
       @reset="onRest"

@@ -343,12 +343,24 @@ const init = (withCanvas = false) => {
     props.canvasWidth - puzzleBaseSize.value - 10
   ); // 留10的边距
   state.pinY = getRandom(20, props.canvasHeight - puzzleBaseSize.value - 10); // 主图高度 - 拼图块自身高度 - 10边距
+
+  // state.pinX = puzzleBaseSize.value + 20; // mock
+  // state.pinY = 20;
   img.crossOrigin = "anonymous"; // 匿名，想要获取跨域的图片
   img.onload = () => {
     const [x, y, w, h] = makeImgSize(img);
+    const r1 = Math.random();
+    const r2 = Math.random();
+    const r3 = Math.random();
+    const r4 = Math.random();
+    const tag1 = r1 < 0.33 ? -1 : r1 < 0.66 ? 0 : 1;
+    const tag2 = r2 < 0.33 ? -1 : r2 < 0.66 ? 0 : 1;
+    const tag3 = r3 < 0.33 ? -1 : r3 < 0.66 ? 0 : 1;
+    const tag4 = r4 < 0.6 ? 1 : 0;
+
     ctx.save();
     // 先画小图路径
-    paintBrick(ctx);
+    paintBrick(ctx, tag1, tag2, tag3, tag4);
     ctx.closePath();
 
     // 非火狐，在此画外阴影
@@ -379,7 +391,7 @@ const init = (withCanvas = false) => {
     // 设置小图的内阴影
     ctx.globalCompositeOperation = "source-atop";
 
-    paintBrick(ctx);
+    paintBrick(ctx, tag1, tag2, tag3, tag4);
 
     ctx.arc(
       state.pinX + Math.ceil(puzzleBaseSize.value / 2),
@@ -425,7 +437,7 @@ const init = (withCanvas = false) => {
 
     // 画缺口
     ctx.save();
-    paintBrick(ctx);
+    paintBrick(ctx, tag1, tag2, tag3, tag4);
     ctx.globalAlpha = 0.8;
     ctx.fillStyle = "#ffffff";
     ctx.fill();
@@ -433,7 +445,7 @@ const init = (withCanvas = false) => {
     // 画缺口的内阴影
     ctx.save();
     ctx.globalCompositeOperation = "source-atop";
-    paintBrick(ctx);
+    paintBrick(ctx, tag1, tag2, tag3, tag4);
     ctx.arc(
       state.pinX + Math.ceil(puzzleBaseSize.value / 2),
       state.pinY + Math.ceil(puzzleBaseSize.value / 2),
@@ -505,57 +517,74 @@ const makeImgSize = (img: HTMLImageElement) => {
 };
 
 // 私有-绘制拼图块的路径
-const paintBrick = (ctx: CanvasRenderingContext2D) => {
+const paintBrick = (ctx: CanvasRenderingContext2D, tag1: number, tag2: number, tag3: number, tag4: number) => {
   const moveL = Math.ceil(15 * props.puzzleScale); // 直线移动的基础距离
   ctx.beginPath();
   ctx.moveTo(state.pinX, state.pinY);
   ctx.lineTo(state.pinX + moveL, state.pinY);
+
   ctx.arcTo(
     state.pinX + moveL,
-    state.pinY - moveL / 2,
+    state.pinY + tag1 * moveL / 2,
     state.pinX + moveL + moveL / 2,
-    state.pinY - moveL / 2,
+    state.pinY + tag1 * moveL / 2,
     moveL / 2
   );
   ctx.arcTo(
     state.pinX + moveL + moveL,
-    state.pinY - moveL / 2,
+    state.pinY + tag1 * moveL / 2,
     state.pinX + moveL + moveL,
     state.pinY,
     moveL / 2
   );
+
   ctx.lineTo(state.pinX + moveL + moveL + moveL, state.pinY);
   ctx.lineTo(state.pinX + moveL + moveL + moveL, state.pinY + moveL);
+
   ctx.arcTo(
-    state.pinX + moveL + moveL + moveL + moveL / 2,
+    state.pinX + moveL + moveL + moveL + tag2 * moveL / 2,
     state.pinY + moveL,
-    state.pinX + moveL + moveL + moveL + moveL / 2,
+    state.pinX + moveL + moveL + moveL + tag2 * moveL / 2,
     state.pinY + moveL + moveL / 2,
     moveL / 2
   );
   ctx.arcTo(
-    state.pinX + moveL + moveL + moveL + moveL / 2,
+    state.pinX + moveL + moveL + moveL + tag2 * moveL / 2,
     state.pinY + moveL + moveL,
     state.pinX + moveL + moveL + moveL,
     state.pinY + moveL + moveL,
     moveL / 2
   );
-  ctx.lineTo(
-    state.pinX + moveL + moveL + moveL,
-    state.pinY + moveL + moveL + moveL
+  ctx.lineTo( state.pinX + moveL + moveL + moveL, state.pinY + moveL + moveL + moveL); // 右下角
+  ctx.lineTo( state.pinX + moveL + moveL, state.pinY + moveL + moveL + moveL);
+
+  ctx.arcTo(
+    state.pinX + moveL + moveL,
+    state.pinY + moveL + moveL + moveL + tag3 * moveL / 2,
+    state.pinX + moveL + moveL / 2,
+    state.pinY + moveL + moveL + moveL + tag3 * moveL / 2,
+    moveL / 2
   );
-  ctx.lineTo(state.pinX, state.pinY + moveL + moveL + moveL);
+  ctx.arcTo(
+    state.pinX + moveL,
+    state.pinY + moveL + moveL + moveL + tag3 * moveL / 2,
+    state.pinX + moveL,
+    state.pinY + moveL + moveL + moveL,
+    moveL / 2
+  );
+
+  ctx.lineTo(state.pinX, state.pinY + moveL + moveL + moveL); // 左下角
   ctx.lineTo(state.pinX, state.pinY + moveL + moveL);
 
   ctx.arcTo(
-    state.pinX + moveL / 2,
+    state.pinX + tag4 * moveL / 2,
     state.pinY + moveL + moveL,
-    state.pinX + moveL / 2,
+    state.pinX + tag4 * moveL / 2,
     state.pinY + moveL + moveL / 2,
     moveL / 2
   );
   ctx.arcTo(
-    state.pinX + moveL / 2,
+    state.pinX + tag4 * moveL / 2,
     state.pinY + moveL,
     state.pinX,
     state.pinY + moveL,
