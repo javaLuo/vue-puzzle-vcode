@@ -64,6 +64,16 @@
 | close   | null   | 用户点击遮罩层的回调                                          |
 | reset    | null  | 用户手动点击右上角刷新按钮时的回调                            |
 
+success事件 / fail事件 会返回两个参数 ：
+```javascript
+    deviation: number, // 偏差值，用户滑动的位置 和 拼图缺口所在位置 的距离，单位px
+    obj: {
+      deviation: number, // 同 deviation
+      offsetX: number, // 用户滑动的距离，单位px
+      pinX: number, // 拼图缺口的所在位置（相对canvas的左边缘）， 单位px
+    }
+```
+
 ### 自定义图片
 ```vue
 <template>
@@ -124,6 +134,10 @@ const imgs = [Img1, Img2];
 以后每次发布新的版本时，都会同时发布一个专用于`Nuxt`的版本，后缀为`-nuxt`；
 
 ### 更新日志
+2024/01/25 - 1.1.7<br/>
+- 更新: 增加了success/fail事件的返参
+- 优化：现在不会出现正方形的拼图块
+
 2023/01/03 - 1.1.6<br/>
 - 新增: 拼图块现在会呈现随机形状
 
