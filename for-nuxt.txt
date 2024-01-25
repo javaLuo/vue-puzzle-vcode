@@ -4,3 +4,5 @@
 2. nuxt发布：
 正常打包，把上面手动改成 
 import 'vue3-puzzle-vcode/css';
+
+发布 npm publish --tag alpha

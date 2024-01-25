@@ -7,9 +7,11 @@
       :show="true"
       type="inside"
       :zIndex="998"
-      :puzzleScale="1"
+      :puzzleScale="2"
+      :sliderSize="30"
       @close="onClose"
-      @success="onClose"
+      @success="onSuccess"
+      @fail="onFail"
       @reset="onRest"
       className="test"
     /> -->
@@ -45,10 +47,19 @@ function onClick() {
 
 function onClose() {
   show.value = false;
+ 
+}
+
+function onSuccess(x: number, obj: any){
+  console.log('obj:', obj);
 }
 
 function onRest() {
   console.log("重置");
+}
+
+function onFail(x: number, obj: any){
+  console.log('obj:', obj);
 }
 </script>
 

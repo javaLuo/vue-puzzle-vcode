@@ -46,7 +46,7 @@
 | canvasHeight | Number  | 160                | 主图区域的高度，单位 px                                                       |
 | puzzleScale  | Number  | 1                  | 拼图块(小的拼图)的大小比例，0.2 ～ 2 ，数字越大，拼图越大                     |
 | sliderSize   | Number  | 50                 | 左下角用户拖动的那个滑块的尺寸，单位 px                                       |
-| range        | Number  | 10                 | 判断成功的误差范围，单位 px, 滑动的距离和拼图的距离小于等于此值时，会判定重合 |
+| range        | Number  | 10                 | 判断成功的误差范围，单位 px, 滑动的距离和拼图缺口的距离小于等于此值时，会判定重合 |
 | imgs         | Array   | null               | 自定义图片，见下方例子                                                        |
 | successText  | String  | "验证通过！"       | 验证成功时的提示文字                                                          |
 | failText     | String  | "验证失败，请重试" | 验证失败时的提示文字                                                          |
@@ -57,10 +57,20 @@
 
 | 事件名  | 返回值 | 说明                                                          |
 | ------- | ------ | ------------------------------------------------------------- |
-| success | 偏差值 | 验证通过时会触发，返回值是用户移动的距离跟目标距离的偏差值 px |
-| fail    | 偏差值 | 验证失败时会触发，返回值同上                                  |
+| success | 偏差值，对象 | 验证通过时会触发，返回值见下方                               |
+| fail    | 偏差值，对象 | 验证失败时会触发，返回值见下方                                |
 | close   | null   | 用户点击遮罩层的回调                                          |
 | reset   | null   | 用户手动点击右上角刷新按钮时触发的回调                         |
+
+success / fail 的返回值：
+```javascript
+    deviation: number, // 偏差值，用户滑动的位置 和 拼图缺口所在位置 的距离，单位px
+    obj: {
+      deviation: number, // 同 deviation
+      offsetX: number, // 用户滑动的距离，单位px
+      pinX: number, // 拼图缺口的所在位置（相对canvas的左边缘）， 单位px
+    }
+```
 
 ### 内嵌形式
 

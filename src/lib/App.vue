@@ -5,7 +5,7 @@
       :style="bodyStyle"
       @mousedown="onCloseMouseDown"
       @mouseup="onCloseMouseUp"
-      @touchstart="onCloseMouseDown"
+      @touchstart.passive="onCloseMouseDown"
       @touchend="onCloseMouseUp"
     >
       <div class="vue-auth-box_" @mousedown.stop @touchstart.stop>
@@ -116,7 +116,7 @@ onUnmounted(() => {
   document.removeEventListener("mousemove", onRangeMouseMove, false);
   document.removeEventListener("mouseup", onRangeMouseUp, false);
 
-  document.removeEventListener("touchmove", onRangeMouseMove);
+  document.removeEventListener("touchmove", onRangeMouseMove, false);
   document.removeEventListener("touchend", onRangeMouseUp, false);
 });
 
@@ -281,10 +281,8 @@ const onRangeMouseDown = (e: Event) => {
   if (state.isCanSlide) {
     state.mouseDown = true;
     state.startWidth = rangeSlider.value?.clientWidth || 0;
-    state.newX =
-      (e as MouseEvent).clientX || (e as TouchEvent).changedTouches[0].clientX;
-    state.startX =
-      (e as MouseEvent).clientX || (e as TouchEvent).changedTouches[0].clientX;
+    state.newX =(e as MouseEvent).clientX !== undefined ? (e as MouseEvent).clientX : (e as TouchEvent).changedTouches[0].clientX;
+    state.startX = (e as MouseEvent).clientX !== undefined ? (e as MouseEvent).clientX : (e as TouchEvent).changedTouches[0].clientX;
   }
 };
 
@@ -292,8 +290,7 @@ const onRangeMouseDown = (e: Event) => {
 const onRangeMouseMove = (e: Event) => {
   if (state.mouseDown) {
     e.preventDefault();
-    state.newX =
-      (e as MouseEvent).clientX || (e as TouchEvent).changedTouches[0].clientX;
+    state.newX = (e as MouseEvent).clientX !== undefined ?  (e as MouseEvent).clientX : (e as TouchEvent).changedTouches[0].clientX;
   }
 };
 
@@ -356,7 +353,10 @@ const init = (withCanvas = false) => {
     const tag1 = r1 < 0.33 ? -1 : r1 < 0.66 ? 0 : 1;
     const tag2 = r2 < 0.33 ? -1 : r2 < 0.66 ? 0 : 1;
     const tag3 = r3 < 0.33 ? -1 : r3 < 0.66 ? 0 : 1;
-    const tag4 = r4 < 0.6 ? 1 : 0;
+    let tag4 = r4 < 0.6 ? 1 : 0;
+    if(tag1 === tag2 && tag2 === tag3  && tag3 === tag4 && tag4 === 0){
+      tag4 = 1;
+    }
 
     ctx.save();
     // 先画小图路径
@@ -652,17 +652,15 @@ const makeImgWithCanvas = () => {
 // 私有-开始判定
 const submit = () => {
   state.isSubmting = true;
-  // 偏差 x = puzzle的起始X - (用户真滑动的距离) + (puzzle的宽度 - 滑块的宽度) * （用户真滑动的距离/canvas总宽度）
+  // 偏差 x = puzzle的起始X - ((用户真滑动的距离) - (puzzle的宽度 - 滑块的宽度) * （用户真滑动的距离/canvas总宽度）+ 3);
   // 最后+ 的是补上slider和滑块宽度不一致造成的缝隙
-  const x = Math.abs(
-    state.pinX -
-      (styleWidth.value - sliderBaseSize.value) +
-      (puzzleBaseSize.value - sliderBaseSize.value) *
-        ((styleWidth.value - sliderBaseSize.value) /
-          (props.canvasWidth - sliderBaseSize.value)) -
-      3
-  );
-  if (x < props.range) {
+  // ((用户真滑动的距离) - (puzzle的宽度 - 滑块的宽度) * （用户真滑动的距离/canvas总宽度))
+  const u = ((styleWidth.value - sliderBaseSize.value) - (puzzleBaseSize.value - sliderBaseSize.value) * ((styleWidth.value - sliderBaseSize.value) / (props.canvasWidth - sliderBaseSize.value)));
+  // 偏差 x = puzzle的起始X - 3 - u; // -3是因为puzzle（移动的拼图块）的x坐标并不是0，有一点缝隙
+  const x = state.pinX - 3 - u;
+  // console.log('x', state.pinX, (styleWidth.value - sliderBaseSize.value), (puzzleBaseSize.value - sliderBaseSize.value), ((styleWidth.value - sliderBaseSize.value) / (props.canvasWidth - sliderBaseSize.value)));
+
+  if (Math.abs(x) < props.range) {
     // 成功
     state.infoText = props.successText;
     state.infoBoxFail = false;
@@ -671,10 +669,11 @@ const submit = () => {
     state.isSuccess = true;
     // 成功后准备关闭
     state.timer1 && clearTimeout(state.timer1);
+
     state.timer1 = setTimeout(() => {
       // 成功的回调
       state.isSubmting = false;
-      emit("success", x);
+      emit("success", x, {deviation: x, offsetX: u, pinX: state.pinX - 3});
     }, 800);
   } else {
     // 失败
@@ -682,7 +681,7 @@ const submit = () => {
     state.infoBoxFail = true;
     state.infoBoxShow = true;
     state.isCanSlide = false;
-    emit("fail", x);
+    emit("fail", x, {deviation: x, offsetX: u, pinX: state.pinX - 3});
     // 800ms后重置
     state.timer1 && clearTimeout(state.timer1);
     state.timer1 = setTimeout(() => {
